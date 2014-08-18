@@ -1,4 +1,4 @@
-var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize']);
+var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize','ui.bootstrap']);
 
 _dictApp.value('dictAjax', wp_ajax);
 
@@ -24,8 +24,33 @@ _dictApp.filter('dictSearch', function ($log, dictRest, dictAjax) {
 });
 
 
-_dictApp.controller('DictCtrl', function ( $log, $window, $scope, $resource, dictRest, dictAjax) {
+_dictApp.controller('DictShowCtrl', function ($log, $scope, $modal) {
+    $log.info('DictShowCtrl');
 
+    var modalConfig = {
+        templateUrl: 'dictModalContent.html',
+        controller: 'DictCtrl',
+        backdrop: 'static',
+        keyboard: true,
+        resolve:{
+            messageTitle: function () {
+                return "Cүзлек";
+            }
+        }
+    };
+
+    var modalInstance;
+
+    $scope.showDictionary = function(){
+        modalInstance = $modal.open(modalConfig);
+    }
+
+});
+
+
+
+_dictApp.controller('DictCtrl', function ( $log, $window, $scope, $modalInstance, dictRest, dictAjax) {
+    $log.info('DictCtrl');
     $scope.request = { action: 'tatrus_get', security: dictAjax.ajaxnonce };
     $scope.result = { };
 	
@@ -74,6 +99,11 @@ _dictApp.controller('DictCtrl', function ( $log, $window, $scope, $resource, dic
 		    }
 		}
 	});
+
+
+    $scope.close = function (result) {
+        $modalInstance.close(result);
+    };
 
 	
 });

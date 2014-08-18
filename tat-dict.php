@@ -88,11 +88,15 @@ function tatdict_load_widget() {
 
 add_action('wp_enqueue_scripts', 'load_tatdict_javascript');
 function load_tatdict_javascript() {
+
+    wp_enqueue_style('bootsrap', TATDICT_URL . 'lib/bootstrap/dist/css/bootstrap.css');
+
     /*Loading angular*/
     wp_enqueue_script('angular', TATDICT_URL . 'lib/angular/angular.js');
     wp_enqueue_script('angular-resource', TATDICT_URL . 'lib/angular-resource/angular-resource.js', array( 'angular' ));
     wp_enqueue_script('angular-cookies', TATDICT_URL . 'lib/angular-cookies/angular-cookies.js', array( 'angular' ));
     wp_enqueue_script('angular-sanitize', TATDICT_URL . 'lib/angular-sanitize/angular-sanitize.js', array( 'angular' ));
+    wp_enqueue_script('angular-bootstrap', TATDICT_URL . 'lib/angular-bootstrap/ui-bootstrap-tpls.js', array( 'angular' ));
 	
     /*Loading App*/
     wp_enqueue_script('angular-app', TATDICT_URL . 'js/app.js', array( 'angular' ));
