@@ -1,15 +1,32 @@
-var _dictApp = angular.module('dictApp',['ngCookies','ngResource','ngSanitize']);
+var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize']);
 
-_dictApp.factory('dictRest', function ($log, $resource) {
-    var restUrl = wp_ajax.ajaxurl;
+_dictApp.value('dictAjax', wp_ajax);
+
+_dictApp.factory('dictRest', function ($log, $resource, dictAjax) {
+    var restUrl = dictAjax.ajaxurl;
 	$log.info(restUrl);
     return $resource(restUrl);
 });
 
+_dictApp.filter('dictSearch', function ($log, dictRest, dictAjax) {
+    var search ={ action: 'tatrus_get', security: dictAjax.ajaxnonce};
 
-_dictApp.controller('DictCtrl', function ( $log, $window, $scope, $resource, dictRest) {
+    return function (name) {
+        search.name = name;
+        $log.info(search);
+        var value = dictRest.get(search);
+        if (value)
+          return value.description;
+        else
+          return name;
+    };
 
-    $scope.request = { action: 'tatrus_get', security: wp_ajax.ajaxnonce };
+});
+
+
+_dictApp.controller('DictCtrl', function ( $log, $window, $scope, $resource, dictRest, dictAjax) {
+
+    $scope.request = { action: 'tatrus_get', security: dictAjax.ajaxnonce };
     $scope.result = { };
 	
 	//Error ajax loaded
@@ -47,7 +64,7 @@ _dictApp.controller('DictCtrl', function ( $log, $window, $scope, $resource, dic
 		if(text && text.trim().length > 1){
 			$scope.request.name = text.trim();
 		}
-	}
+	};
 	
 	 
 	$scope.$watch('request.name', function (newWord, oldWord) {

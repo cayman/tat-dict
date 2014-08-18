@@ -1,4 +1,4 @@
-<div ng-app="dictApp">
+<div>
 	<form ng-controller="DictCtrl">
 		<input class="widefat" id="tatdict_widget_word" type="text" ng-model="request.name" ng-mousedown="copyText()" 
 				placeholder="Cүзлек" style="width: 190px"/><br/>
