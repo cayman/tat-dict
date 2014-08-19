@@ -53,9 +53,12 @@ class tatdict_widget extends WP_Widget {
 	}
 	
 	public function widget( $args, $instance ) {
+        $title = apply_filters( 'widget_title', $instance['title'] );
+
 		echo $args['before_widget'];
-		if ( ! empty( $title ) )
-		echo $args['before_title'] . $title . $args['after_title'];
+		if ( ! empty( $title ) ) {
+            echo $args['before_title'] . $title . $args['after_title'];
+        }
 		include( TATDICT_DIR . 'views/form.php');
 		echo $args['after_widget'];
     }
@@ -63,7 +66,9 @@ class tatdict_widget extends WP_Widget {
 	public function form( $instance ) {
 		if ( isset( $instance[ 'title' ] ) ) {
 			$title = $instance[ 'title' ];
-		}
+		} else {
+            $title = __( 'Cүзлек', 'tatdict_widget_domain' );
+        }
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>">Заголовок</label> 

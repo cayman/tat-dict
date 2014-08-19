@@ -1,31 +1,31 @@
 var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize','ui.bootstrap']);
 
-_dictApp.value('dictAjax', wp_ajax);
+_dictApp.factory('dictService', function ($log, $modal, $resource) {
+    var ajaxUrl = "./example.json";
+    var ajaxNonce = null;
+    var ajaxAction = 'tatrus_get';
 
-_dictApp.factory('dictRest', function ($log, $resource, dictAjax) {
-    var restUrl = dictAjax.ajaxurl;
-	$log.info(restUrl);
-    return $resource(restUrl);
-});
-
-_dictApp.filter('dictSearch', function ($log, dictRest, dictAjax) {
-    var search ={ action: 'tatrus_get', security: dictAjax.ajaxnonce};
-
-    return function (name) {
-        search.name = name;
-        $log.info(search);
-        var value = dictRest.get(search);
-        if (value)
-          return value.description;
-        else
-          return name;
+    if(angular.isObject(wp_ajax)){
+        ajaxUrl =   wp_ajax.ajaxurl;
+        ajaxNonce = wp_ajax.ajaxnonce;
+    }
+    var dictionaryConfig = {
+        enabled: true,
+        modalInstance:null
     };
 
-});
+    var dictionaryRest = $resource(ajaxUrl);
+
+    var dictionaryHistory = [];
 
 
-_dictApp.controller('DictShowCtrl', function ($log, $scope, $modal) {
-    $log.info('DictShowCtrl');
+    var dictionaryRequest = {
+        action: ajaxAction,
+        security: ajaxNonce ,
+        title: null ,
+        name: null
+    };
+
 
     var modalConfig = {
         templateUrl: 'dictModalContent.html',
@@ -33,26 +33,119 @@ _dictApp.controller('DictShowCtrl', function ($log, $scope, $modal) {
         backdrop: 'static',
         keyboard: true,
         resolve:{
-            messageTitle: function () {
-                return "Cүзлек";
-            }
+            data: null
         }
     };
 
-    var modalInstance;
 
-    $scope.showDictionary = function(){
-        modalInstance = $modal.open(modalConfig);
-    }
+    return {
+        getRest: function(){
+          return dictionaryRest;
+        },
+        getSelectedText: function () {
+            if(dictionaryConfig.enabled) {
+                var selectedText = "";
+                if (window.getSelection) {
+                    selectedText = window.getSelection().toString();
+                } else if (document.getSelection) {
+                    selectedText = document.getSelection().toString();
+                } else if (document.selection) {
+                    selectedText = document.selection.createRange().text;
+                }
+                if (angular.isString(selectedText)) {
+                    var trimmedText = selectedText.trim();
+                    if (trimmedText.length > 1) {
+                        return trimmedText;
+                    }
+
+                }
+            }
+            return null;
+        },
+        openModal: function(selected){
+            modalConfig.resolve.data = function () {
+                return selected;
+            };
+            dictionaryConfig.modalInstance = $modal.open(modalConfig);
+        },
+        getNewRequest: function(){
+            return angular.copy(dictionaryRequest);
+        },
+        getHistory: function(){
+            return dictionaryHistory;
+        },
+        saveHistory: function(item){
+            return dictionaryHistory.push(item);
+        },
+        getConfig: function(){
+            return dictionaryConfig;
+        }
+    };
 
 });
 
 
+_dictApp.directive('dictWatch', function($log,$modal,dictService) {
+    $log.info('DictShowCtrl');
+    return function(scope, elem) {
+          elem.on('mouseup', function () {
+              var text = dictService.getSelectedText();
+              if (text) {
+                  dictService.openModal(text);
+              }
+          });
+    };
+});
 
-_dictApp.controller('DictCtrl', function ( $log, $window, $scope, $modalInstance, dictRest, dictAjax) {
+//
+//
+//
+//_dictApp.filter('dictSearch', function ($log, dictRest, dictAjax) {
+//    var search ={ action: 'tatrus_get', security: dictAjax.ajaxnonce};
+//
+//    return function (name) {
+//        search.name = name;
+//        $log.info(search);
+//        var value = dictRest.get(search);
+//        if (value)
+//          return value.description;
+//        else
+//          return name;
+//    };
+//
+//});
+
+_dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
+    $log.info('DictHandlerCtrl');
+    var config = dictService.getConfig();
+    $scope.dictToggle = function(){
+        $log.info(config.enabled);
+        config.enabled = !config.enabled;
+        $log.info(config.enabled);
+    };
+    $scope.dictIsEnabled = function(){
+        return config.enabled;
+    };
+
+    $scope.dictOpen = function (){
+        dictService.openModal();
+    }
+});
+
+
+
+
+_dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
-    $scope.request = { action: 'tatrus_get', security: dictAjax.ajaxnonce };
+    $scope.request = dictService.getNewRequest();
     $scope.result = { };
+    $scope.meaning = null;
+    $scope.history =  dictService.getHistory();
+
+    if(data){
+        $scope.request.title = $scope.request.name =  data;
+        search();
+    }
 	
 	//Error ajax loaded
     function objectsNotFound() {
@@ -66,28 +159,15 @@ _dictApp.controller('DictCtrl', function ( $log, $window, $scope, $modalInstance
 	
 	function search(){
 		$log.debug('new search:', $scope.request);
-		$scope.result = dictRest.get($scope.request,
+		$scope.result = dictService.getRest().get($scope.request,
             objectsFound,
             objectsNotFound);	
 	}
-	
-	function getSelectedText(){
-		var selectedText = "";
-		if(window.getSelection){
-			selectedText = window.getSelection().toString();
-		}else if (document.getSelection){
-			selectedText = document.getSelection();
-		}else if (document.selection){
-			selectedText = document.selection.createRange().text;
-		} 
-		return selectedText;
-	}
-	
-	
+
 	$scope.copyText = function(){
-	    var text = getSelectedText();
-		if(text && text.trim().length > 1){
-			$scope.request.name = text.trim();
+	    var text = dictService.getSelectedText();
+		if(text && text.length > 1){
+			$scope.request.name = text;
 		}
 	};
 	
@@ -100,9 +180,27 @@ _dictApp.controller('DictCtrl', function ( $log, $window, $scope, $modalInstance
 		}
 	});
 
+    $scope.$watch('result.name', function (newWord, oldWord) {
+        if (newWord && newWord!=oldWord ) {
+            var filtered = $filter('filter')($scope.result.like, { name: newWord });
+            if(filtered.length>0) {
+                $scope.meaning = filtered[0];
+            }
+        }
+	});
+
 
     $scope.close = function (result) {
-        $modalInstance.close(result);
+        $modalInstance.dismiss('cancel');
+    };
+
+    $scope.save = function () {
+        dictService.saveHistory({
+            title: $scope.request.title ? $scope.request.title : $scope.request.name ,
+            name: $scope.meaning.name
+        });
+        $modalInstance.close();
+
     };
 
 	
