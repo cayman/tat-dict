@@ -1,4 +1,4 @@
-var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize','ui.bootstrap']);
+var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize','ngTouch','ui.bootstrap']);
 
 _dictApp.factory('dictService', function ($log, $modal, $resource) {
     var ajaxUrl = "./example.json";
@@ -11,7 +11,30 @@ _dictApp.factory('dictService', function ($log, $modal, $resource) {
     }
     var dictionaryConfig = {
         enabled: true,
-        modalInstance:null
+        modalInstance:null,
+        blockStyle:{
+            display:"block",
+            width:"20px",
+            height:"120px",
+            position:"fixed",
+            left:"0px",
+            top:"80px",
+            "z-index":5,
+            border:"1px solid #2c807f"
+        },
+        textStyle:{
+            color:"#2c807f",
+            "font-size": "10pt",
+            "font-weight":"lighter",
+            "margin":"65px 0 0 0",
+            "text-align": "justify",
+            "-moz-transform": "rotate(-90deg)",
+            "-webkit-transform": "rotate(-90deg)",
+            "-ms-transform": "rotate(-90deg)",
+            "-o-transform": "rotate(-90deg)",
+            "transform": "rotate(-90deg)",
+            "writing-mode": "tb-rl"
+        }
     };
 
     var dictionaryRest = $resource(ajaxUrl);
@@ -45,12 +68,18 @@ _dictApp.factory('dictService', function ($log, $modal, $resource) {
         getSelectedText: function () {
             if(dictionaryConfig.enabled) {
                 var selectedText = "";
+                var selection;
                 if (window.getSelection) {
-                    selectedText = window.getSelection().toString();
+                    selection = window.getSelection();
+                    selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
+
                 } else if (document.getSelection) {
-                    selectedText = document.getSelection().toString();
+                    selection = document.getSelection();
+                    selectedText = (selection.rangeCount) ? selection.getRangeAt(0).toString() : selection.toString();
+
                 } else if (document.selection) {
-                    selectedText = document.selection.createRange().text;
+                    selection = document.selection;
+                    selectedText = selection.createRange().text;
                 }
                 if (angular.isString(selectedText)) {
                     var trimmedText = selectedText.trim();
@@ -117,18 +146,11 @@ _dictApp.directive('dictWatch', function($log,$modal,dictService) {
 
 _dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
     $log.info('DictHandlerCtrl');
-    var config = dictService.getConfig();
-    $scope.dictToggle = function(){
-        $log.info(config.enabled);
-        config.enabled = !config.enabled;
-        $log.info(config.enabled);
-    };
-    $scope.dictIsEnabled = function(){
-        return config.enabled;
-    };
+    $scope.dictConfig = dictService.getConfig();
 
     $scope.dictOpen = function (){
-        dictService.openModal();
+        var text = dictService.getSelectedText();
+        dictService.openModal(text);
     }
 });
 
@@ -166,7 +188,7 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictService, $
 
 	$scope.copyText = function(){
 	    var text = dictService.getSelectedText();
-		if(text && text.length > 1){
+		if(text){
 			$scope.request.name = text;
 		}
 	};
@@ -174,9 +196,7 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictService, $
 	 
 	$scope.$watch('request.name', function (newWord, oldWord) {
         if (newWord && newWord!=oldWord ) {			
-			if(newWord.length > 1){
-				search();
-		    }
+			search();
 		}
 	});
 

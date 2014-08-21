@@ -8,7 +8,7 @@
             <form>
                 <table>
                     <tr>
-                        <td>
+                        <td colspan="2">
                             <input class="widefat" id="tatdict_widget_word" type="text" ng-model="request.name" ng-mousedown="copyText()"
                                    placeholder="Языгыз" style="width: 180px"/><br/>
                             <select ng-model="result.name" size="5" style="width: 180px">
@@ -17,14 +17,14 @@
                                         title="{{likeItem.description}}">{{ likeItem.name }}</option>
                             </select>
                         </td>
-                        <td>
-                            <div>Сорау</div>
-                            <select size="5" style="width: 180px">
-                                <option ng-repeat="historyItem in history"	value="{{ historyItem.title }}"
-                                        ng-selected="{{historyItem.name == result.name}}">
-                                    {{ historyItem.title }}<span ng-if="historyItem.name"> ({{ historyItem.name }})</span></option>
-                            </select>
-                        </td>
+<!--                        <td>-->
+<!--                            <div>Сорау</div>-->
+<!--                            <select size="5" style="width: 180px">-->
+<!--                                <option ng-repeat="historyItem in history"	value="{{ historyItem.title }}"-->
+<!--                                        ng-selected="{{historyItem.name == result.name}}">-->
+<!--                                    {{ historyItem.title }}<span ng-if="historyItem.name"> ({{ historyItem.name }})</span></option>-->
+<!--                            </select>-->
+<!--                        </td>-->
                     </tr>
                     <tr>
                         <td colspan="2">
@@ -44,9 +44,10 @@
 </script>
 
 <div ng-controller="DictHandlerCtrl">
-    <button ng-click="dictToggle()">
-        <span ng-if="dictIsEnabled()">Кабызган</span>
-        <span ng-if="!dictIsEnabled()">Сүндергән</span>
-    </button>
-    <button ng-click="dictOpen()" ng-disabled="!dictIsEnabled()">Ачырга</button>
+
+    <input type="checkbox" ng-model="dictConfig.enabled"/> Кабызган<br/>
+
+    <div ng-show="dictConfig.enabled" ng-style="dictConfig.blockStyle" ng-click="dictOpen()" ng-tape="dictOpen()">
+        <div ng-style="dictConfig.textStyle" >Cүзлек</div>
+    </div>
 </div>
