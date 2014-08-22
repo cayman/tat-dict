@@ -14,17 +14,17 @@ ini_set("display_errors", 1);
 define('TATDICT_DIR', plugin_dir_path(__FILE__));
 define('TATDICT_URL', plugin_dir_url(__FILE__));
 
-add_action('wp_ajax_tatrus_get', 'tatrus_get_callback');
-add_action('wp_ajax_nopriv_tatrus_get', 'tatrus_get_callback');
+add_action('wp_ajax_tatrus_search', 'tatrus_search_callback');
+add_action('wp_ajax_nopriv_tatrus_search', 'tatrus_search_callback');
 
-function tatrus_get_callback() {
+function tatrus_search_callback() {
 
 	check_ajax_referer( 'ajax_post_validation', 'security' );
 	$word = $_GET['name'];
-	if(!empty($word)){		
+	if(!empty($word)){
 		global $wpdb;
 		$table = 'wp_dict_tatrus';	
-		$result = $wpdb->get_row(
+		$result->item = $wpdb->get_row(
 				"SELECT * FROM $table
 				 WHERE name = '$word' ");			 
 				 
@@ -38,6 +38,42 @@ function tatrus_get_callback() {
     die();
 	//wp_send_json_success('json_encode($result)');
 	
+}
+
+add_action('wp_ajax_tatrus_get_history', 'tatrus_get_history_callback');
+
+function tatrus_get_history_callback() {
+
+    check_ajax_referer( 'ajax_post_validation', 'security' );
+    global $wpdb;
+    $ids = get_post_meta(1, 'Dictionary', true);
+    if(!empty($ids )) {
+        $table = 'wp_dict_tatrus';
+
+        $result = $wpdb->get_results(
+            "SELECT * FROM $table
+				 WHERE id IN ($ids) ");
+
+        header("Content-Type: application/json");
+        echo json_encode($result);
+    }
+    die();
+    //wp_send_json_success('json_encode($result)');
+
+}
+
+add_action('wp_ajax_tatrus_save_history', 'tatrus_save_history_callback');
+
+function tatrus_save_history_callback() {
+
+    check_ajax_referer( 'ajax_post_validation', 'security' );
+    $ids = $_GET['ids'];
+    if(!empty($ids)){
+        update_post_meta( 1, 'Dictionary', $ids);
+    }
+    die();
+    //wp_send_json_success('json_encode($result)');
+
 }
 
 

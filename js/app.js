@@ -1,14 +1,23 @@
 var _dictApp = angular.module('wpApp',['ngCookies','ngResource','ngSanitize','ngTouch','ui.bootstrap']);
 
-_dictApp.factory('dictService', function ($log, $modal, $resource) {
+_dictApp.factory('dictRest', function ($resource) {
     var ajaxUrl = "./example.json";
     var ajaxNonce = null;
-    var ajaxAction = 'tatrus_get';
 
     if(angular.isObject(wp_ajax)){
         ajaxUrl =   wp_ajax.ajaxurl;
         ajaxNonce = wp_ajax.ajaxnonce;
     }
+
+    return $resource(ajaxUrl,{},{
+        search: {params: {security:ajaxNonce, action:'tatrus_search'}, cache:true },
+        getHistory: {params: {security:ajaxNonce, action:'tatrus_get_history'}, isArray: true},
+        saveHistory: {params: {security:ajaxNonce, action:'tatrus_save_history'} }
+    });
+});
+
+
+_dictApp.factory('dictService', function ($log, dictRest, $modal) {
     var dictionaryConfig = {
         enabled: true,
         modalInstance:null,
@@ -37,14 +46,20 @@ _dictApp.factory('dictService', function ($log, $modal, $resource) {
         }
     };
 
-    var dictionaryRest = $resource(ajaxUrl);
+    var dictionaryHistory = dictRest.getHistory();
+    $log.info('dictHistory',dictionaryHistory);
 
-    var dictionaryHistory = [];
+    function saveHistory(){
+        var ids = '';
+        dictionaryHistory.forEach(function(entry) {
+            ids += (ids)? (','+entry.id) : entry.id;
+        });
+        $log.info('saveHistory:ids=',ids);
+        dictRest.saveHistory({ids:ids});
+    }
 
 
     var dictionaryRequest = {
-        action: ajaxAction,
-        security: ajaxNonce ,
         title: null ,
         name: null
     };
@@ -62,9 +77,6 @@ _dictApp.factory('dictService', function ($log, $modal, $resource) {
 
 
     return {
-        getRest: function(){
-          return dictionaryRest;
-        },
         getSelectedText: function () {
             if(dictionaryConfig.enabled) {
                 var selectedText = "";
@@ -100,15 +112,13 @@ _dictApp.factory('dictService', function ($log, $modal, $resource) {
         getNewRequest: function(){
             return angular.copy(dictionaryRequest);
         },
+        getConfig: function(){
+            return dictionaryConfig;
+        },
         getHistory: function(){
             return dictionaryHistory;
         },
-        saveHistory: function(item){
-            return dictionaryHistory.push(item);
-        },
-        getConfig: function(){
-            return dictionaryConfig;
-        }
+        saveHistory: saveHistory
     };
 
 });
@@ -123,6 +133,17 @@ _dictApp.directive('dictWatch', function($log,$modal,dictService) {
                   dictService.openModal(text);
               }
           });
+    };
+});
+
+_dictApp.directive('stopEvent', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            element.on(attr.stopEvent, function (e) {
+                e.stopPropagation();
+            });
+        }
     };
 });
 
@@ -157,19 +178,52 @@ _dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
 
 
 
-_dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictService, $modalInstance, data) {
+_dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictRest, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
     $scope.request = dictService.getNewRequest();
     $scope.result = { };
-    $scope.meaning = null;
+    $scope.resultId = null;
     $scope.history =  dictService.getHistory();
 
     if(data){
         $scope.request.title = $scope.request.name =  data;
         search();
     }
-	
-	//Error ajax loaded
+
+    $scope.deleteSymbol = function (id){
+        if($scope.request.name.length > 2) {
+            $scope.request.name = $scope.request.name.slice(0, -1);
+        }
+        $scope.focus(id);
+    };
+
+    $scope.focus = function (id){
+        // angular.element(id).focus();
+    };
+
+    $scope.copyText = function(){
+        var text = dictService.getSelectedText();
+        if(text){
+            $scope.request.name = text;
+        }
+    };
+
+    //searching
+
+    $scope.$watch('request.name', function (newWord, oldWord) {
+        if (newWord && newWord!=oldWord ) {
+            search();
+        }
+    });
+
+    function search(){
+        $log.debug('new search:', $scope.request);
+        $scope.result = dictRest.search($scope.request,
+            objectsFound,
+            objectsNotFound);
+    }
+
+    //Error ajax loaded
     function objectsNotFound() {
 		$log.debug('not found');
     }
@@ -177,50 +231,43 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictService, $
     //Success ajax loaded
     function objectsFound(value) {
 		$log.debug(value);
+        if($scope.result.item){
+            $scope.result.selected = $scope.result.item.id;
+        }else if($scope.result.like && $scope.result.like.length > 0){
+            $scope.result.selected = $scope.result.like[0].id;
+        }
     }
-	
-	function search(){
-		$log.debug('new search:', $scope.request);
-		$scope.result = dictService.getRest().get($scope.request,
-            objectsFound,
-            objectsNotFound);	
-	}
 
-	$scope.copyText = function(){
-	    var text = dictService.getSelectedText();
-		if(text){
-			$scope.request.name = text;
-		}
-	};
-	
-	 
-	$scope.$watch('request.name', function (newWord, oldWord) {
-        if (newWord && newWord!=oldWord ) {			
-			search();
-		}
-	});
+    //change selectbox
 
-    $scope.$watch('result.name', function (newWord, oldWord) {
-        if (newWord && newWord!=oldWord ) {
-            var filtered = $filter('filter')($scope.result.like, { name: newWord });
-            if(filtered.length>0) {
-                $scope.meaning = filtered[0];
+    $scope.$watch('result.selected', function (newId, oldId) {
+        if (newId && newId!=oldId) {
+            var filtered = $filter('filter')($scope.history, { id: newId });
+            if (filtered.length == 0) {
+                filtered = $filter('filter')($scope.result.like, { id: newId });
+            }
+            if (filtered.length > 0) {
+                $scope.result.item = filtered[0];
             }
         }
 	});
 
 
+    //closing
+
     $scope.close = function (result) {
+        if($scope.result.item) {
+            $scope.history.push($scope.result.item);
+        }
         $modalInstance.dismiss('cancel');
     };
 
     $scope.save = function () {
-        dictService.saveHistory({
-            title: $scope.request.title ? $scope.request.title : $scope.request.name ,
-            name: $scope.meaning.name
-        });
+        if($scope.result.item) {
+            $scope.history.push($scope.result.item);
+        }
+        dictService.saveHistory();
         $modalInstance.close();
-
     };
 
 	
