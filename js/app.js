@@ -14,46 +14,15 @@ _dictApp.factory('dictRest', function ($resource) {
         getHistory: {params: {security:ajaxNonce, action:'tatrus_get_history'}, isArray: true},
         saveHistory: {params: {security:ajaxNonce, action:'tatrus_save_history'} }
     });
+
 });
 
 
-_dictApp.factory('dictService', function ($log, dictRest, $modal) {
+_dictApp.factory('dictService', function ($log, $modal) {
     var dictionaryConfig = {
         enabled: true,
-        modalInstance:null,
-        blockStyle:{
-            display:"block",
-            width:"20px",
-            height:"120px",
-            position:"fixed",
-            left:"0px",
-            top:"80px",
-            "z-index":5,
-            border:"1px solid #2c807f"
-        },
-        textStyle:{
-            color:"#2c807f",
-            "font-size": "10pt",
-            "font-weight":"lighter",
-            "margin":"65px 0 0 0",
-            "text-align": "justify",
-            "-moz-transform": "rotate(-90deg)",
-            "-webkit-transform": "rotate(-90deg)",
-            "-ms-transform": "rotate(-90deg)",
-            "-o-transform": "rotate(-90deg)",
-            "transform": "rotate(-90deg)",
-            "writing-mode": "tb-rl"
-        }
+        modalInstance:null
     };
-
-    var dictionaryHistory = {};
-
-
-    var dictionaryRequest = {
-        title: null ,
-        name: null
-    };
-
 
     var modalConfig = {
         templateUrl: 'dictModalContent.html',
@@ -68,22 +37,22 @@ _dictApp.factory('dictService', function ($log, dictRest, $modal) {
 
     return {
         getSelectedText: function () {
-            if(dictionaryConfig.enabled) {
+            if (dictionaryConfig.enabled) {
                 var selectedText = "";
                 var selection;
                 if (window.getSelection) {
                     selection = window.getSelection();
-                    $log.debug('window.getSelection',selection);
+                    $log.debug('window.getSelection', selection);
                     selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
 
                 } else if (document.getSelection) {
                     selection = document.getSelection();
-                    $log.debug('document.getSelection',selection);
+                    $log.debug('document.getSelection', selection);
                     selectedText = (selection.rangeCount) ? selection.getRangeAt(0).toString() : selection.toString();
 
                 } else if (document.selection) {
                     selection = document.selection;
-                    $log.debug('document.selection',selection);
+                    $log.debug('document.selection', selection);
                     selectedText = selection.createRange().text;
                 }
                 if (angular.isString(selectedText)) {
@@ -96,39 +65,52 @@ _dictApp.factory('dictService', function ($log, dictRest, $modal) {
             }
             return null;
         },
-        openModal: function(selected,postId){
+        openModal: function (selected, postId) {
             var data = {
                 text: selected,
                 post: postId
             };
-            $log.debug('openModal',data);
+            $log.debug('openModal', data);
             modalConfig.resolve.data = function () {
                 return data;
             };
             dictionaryConfig.modalInstance = $modal.open(modalConfig);
         },
-        getNewRequest: function(){
-            return angular.copy(dictionaryRequest);
-        },
+
         getConfig: function(){
             return dictionaryConfig;
+        }
+
+    };
+
+});
+
+_dictApp.factory('dictHistory', function ($log, dictRest, $filter) {
+
+    var dictionaryHistory = {};
+
+    return {
+        inArray: function (arr, id) {
+            return (arr && arr.length>0) ? ( $filter('filter')(arr, { id: id })[0] || null) : null ;
         },
-        getHistory: function(postId){
-            if(postId) {
+        load: function (postId) {
+            if (postId) {
                 return dictionaryHistory[postId] ? dictionaryHistory[postId] : dictRest.getHistory({post: postId});
-            }else {
+            } else {
                 return null;
             }
         },
-        addHistoryItem: function(postId,entry){
-            if(postId && entry) {
-                var data = {post:postId,id:entry.id};
-                $log.info('addHistoryItem',entry.name, data);
-                if(!dictionaryHistory[postId]){
-                    dictionaryHistory[postId] = [];
+        add: function (postId, entry) {
+            if (postId && entry) {
+                var data = {post: postId, id: entry.id};
+                if (!this.inArray(dictionaryHistory[postId], entry.id)) {
+                    $log.info('addHistoryItem', entry.name, data);
+
+                    ( dictionaryHistory[postId] || (dictionaryHistory[postId] = [])).push(entry);
+
+                    dictRest.saveHistory(data);
+
                 }
-                dictionaryHistory[postId].push(entry);
-                dictRest.saveHistory(data);
             }
         }
     };
@@ -190,17 +172,16 @@ _dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
 
 
 
-
-_dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictRest, dictService, $modalInstance, data) {
+_dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
-    $scope.request = dictService.getNewRequest();
-    $scope.result = { };
-    $scope.resultId = null;
     $scope.post = data.post;
-    $scope.history = dictService.getHistory( data.post );
+    $scope.history = dictHistory.load(data.post);
+    $scope.request = { title: null ,  name: null  };
+    $scope.resultId = null;
+    $scope.result = { };
 
     if(data.text){
-        $scope.request.title = data.text + ' (' + data.post +') ';
+        $scope.request.title = data.text;
         $scope.request.name =  data.text;
         search();
     }
@@ -253,16 +234,8 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictRest, dict
 
     $scope.$watch('result.selected', function (newId, oldId) {
         if (newId && newId!=oldId) {
-
-            var filtered = $filter('filter')($scope.result.like, { id: newId });
-
-            if ($scope.history && filtered.length == 0) {
-                filtered = $filter('filter')($scope.history, { id: newId })
-            }
-
-            if (filtered.length > 0) {
-                $scope.result.item = filtered[0];
-            }
+            $scope.result.item = dictHistory.inArray($scope.result.like,newId)
+                || dictHistory.inArray($scope.history,newId);
         }
 	});
 
@@ -274,11 +247,11 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $filter, dictRest, dict
     };
 
     $scope.save = function () {
-        dictService.addHistoryItem($scope.post,$scope.result.item);
+        dictHistory.add($scope.post,$scope.result.item);
         $modalInstance.close();
     };
 
 	
 });
-	
+
 	
