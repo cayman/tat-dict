@@ -10,12 +10,13 @@
                        ng-mousedown="copyText()"
                        ng-swipe-left="deleteSymbol('#dict_word')" ng-swipe-right="focus('#dict_word')"
                        placeholder="Языгыз" class="dict_search_input"/><br/>
-                <select ng-if="result.like"  ng-model="result.selected" size="5" style="width: 180px">
+                <select ng-if="result.like && result.like.length"  ng-model="result.selected" size="5" style="width: 180px">
                     <option ng-repeat="like in result.like"	value="{{ like.id }}"
                             ng-selected="{{like.id === result.item.id}}"
                             title="{{like.description}}">{{ like.name }}</option>
-                </select><br ng-if="result.like"/>
-                <select ng-if="history && history.length" ng-model="result.selected" style="width: 180px">
+                </select><br ng-if="result.like && result.like.length"/>
+                <select ng-if="history && history.length" ng-model="result.selected" style="width: 180px"
+                        placeholder="Истәлек">
                     <option ng-repeat="item in history"	value="{{ item.id }}"
                             title="{{item.description}}">{{ item.name }}</option>
                 </select>

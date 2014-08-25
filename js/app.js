@@ -21,7 +21,7 @@ _dictApp.factory('dictRest', function ($resource) {
 _dictApp.factory('dictService', function ($log, $modal) {
     var dictionaryConfig = {
         enabled: true,
-        modalInstance:null
+        auto: true
     };
 
     var modalConfig = {
@@ -36,49 +36,48 @@ _dictApp.factory('dictService', function ($log, $modal) {
 
 
     return {
+        getConfig: function(){
+            return dictionaryConfig;
+        },
         getSelectedText: function () {
-            if (dictionaryConfig.enabled) {
-                var selectedText = "";
-                var selection;
-                if (window.getSelection) {
-                    selection = window.getSelection();
-                    $log.debug('window.getSelection', selection);
-                    selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
+            var selectedText = "";
+            var selection;
+            if (window.getSelection) {
+                selection = window.getSelection();
+                $log.debug('window.getSelection', selection);
+                selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
 
-                } else if (document.getSelection) {
-                    selection = document.getSelection();
-                    $log.debug('document.getSelection', selection);
-                    selectedText = (selection.rangeCount) ? selection.getRangeAt(0).toString() : selection.toString();
+            } else if (document.getSelection) {
+                selection = document.getSelection();
+                $log.debug('document.getSelection', selection);
+                selectedText = (selection.rangeCount) ? selection.getRangeAt(0).toString() : selection.toString();
 
-                } else if (document.selection) {
-                    selection = document.selection;
-                    $log.debug('document.selection', selection);
-                    selectedText = selection.createRange().text;
+            } else if (document.selection) {
+                selection = document.selection;
+                $log.debug('document.selection', selection);
+                selectedText = selection.createRange().text;
+            }
+            if (angular.isString(selectedText)) {
+                var trimmedText = selectedText.trim();
+                if (trimmedText.length > 1) {
+                    return trimmedText;
                 }
-                if (angular.isString(selectedText)) {
-                    var trimmedText = selectedText.trim();
-                    if (trimmedText.length > 1) {
-                        return trimmedText;
-                    }
 
-                }
             }
             return null;
         },
-        openModal: function (selected, postId) {
-            var data = {
-                text: selected,
-                post: postId
-            };
-            $log.debug('openModal', data);
-            modalConfig.resolve.data = function () {
-                return data;
-            };
-            dictionaryConfig.modalInstance = $modal.open(modalConfig);
-        },
-
-        getConfig: function(){
-            return dictionaryConfig;
+        openModal: function (postId, text) {
+            if (text && text.length < 128){
+                var data = {
+                    text: text,
+                    post: postId
+                };
+                $log.debug('openModal', data);
+                modalConfig.resolve.data = function () {
+                    return data;
+                };
+                $modal.open(modalConfig);
+            }
         }
 
     };
@@ -90,12 +89,12 @@ _dictApp.factory('dictHistory', function ($log, dictRest, $filter) {
     var dictionaryHistory = {};
 
     return {
-        inArray: function (arr, id) {
-            return (arr && arr.length>0) ? ( $filter('filter')(arr, { id: id })[0] || null) : null ;
+        inArray: function (arr, criteria) {
+            return (arr && arr.length>0) ? ( $filter('filter')(arr, criteria)[0] || null) : null ;
         },
-        load: function (postId) {
+        get: function (postId) {
             if (postId) {
-                return dictionaryHistory[postId] ? dictionaryHistory[postId] : dictRest.getHistory({post: postId});
+                return dictionaryHistory[postId] ? dictionaryHistory[postId] : (dictionaryHistory[postId] = dictRest.getHistory({post: postId}));
             } else {
                 return null;
             }
@@ -103,7 +102,7 @@ _dictApp.factory('dictHistory', function ($log, dictRest, $filter) {
         add: function (postId, entry) {
             if (postId && entry) {
                 var data = {post: postId, id: entry.id};
-                if (!this.inArray(dictionaryHistory[postId], entry.id)) {
+                if (!this.inArray(dictionaryHistory[postId],{ id: entry.id })) {
                     $log.info('addHistoryItem', entry.name, data);
 
                     ( dictionaryHistory[postId] || (dictionaryHistory[postId] = [])).push(entry);
@@ -122,10 +121,13 @@ _dictApp.directive('dictWatch', function($log,$modal,dictService) {
     $log.info('DictShowCtrl');
     return function(scope, elem, attrs) {
           var postId = attrs.dictWatch;
+          var config = dictService.getConfig();
           elem.on('mouseup', function () {
-              var text = dictService.getSelectedText();
-              if (text) {
-                  dictService.openModal(text,postId);
+              if(config.enabled && config.auto){
+                  var text = dictService.getSelectedText();
+                  if (text) {
+                      dictService.openModal(postId, text);
+                  }
               }
           });
     };
@@ -160,13 +162,20 @@ _dictApp.directive('stopEvent', function () {
 //
 //});
 
-_dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
-    $log.info('DictHandlerCtrl');
+_dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService, dictHistory) {
+    $log.info('DictHandlerCtrl:'+$scope.postId);
     $scope.dictConfig = dictService.getConfig();
+    $scope.dictionary = null;
 
-    $scope.dictOpen = function (postId){
-        var text = dictService.getSelectedText();
-        dictService.openModal(text,postId);
+    $scope.$watch('postId', function (postId) {
+        $log.info('postId:'+$scope.postId);
+        $scope.dictionary = dictHistory.get(postId);
+    });
+
+    $scope.dictOpen = function (text){
+        if($scope.dictConfig.enabled) {
+            dictService.openModal($scope.postId, text || dictService.getSelectedText());
+        }
     }
 });
 
@@ -175,7 +184,7 @@ _dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService) {
 _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
     $scope.post = data.post;
-    $scope.history = dictHistory.load(data.post);
+    $scope.history = dictHistory.get(data.post);
     $scope.request = { title: null ,  name: null  };
     $scope.resultId = null;
     $scope.result = { };
@@ -183,7 +192,10 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, 
     if(data.text){
         $scope.request.title = data.text;
         $scope.request.name =  data.text;
-        search();
+        $scope.result.item = dictHistory.inArray($scope.history,{ name: data.text });
+        if(!$scope.result.item) {
+            search();
+        }
     }
 
     $scope.deleteSymbol = function (){
@@ -234,8 +246,8 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, 
 
     $scope.$watch('result.selected', function (newId, oldId) {
         if (newId && newId!=oldId) {
-            $scope.result.item = dictHistory.inArray($scope.result.like,newId)
-                || dictHistory.inArray($scope.history,newId);
+            $scope.result.item = dictHistory.inArray($scope.result.like,{ id: newId } )
+                || dictHistory.inArray($scope.history,{ id: newId });
         }
 	});
 

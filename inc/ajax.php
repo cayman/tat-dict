@@ -17,6 +17,7 @@ function tatrus_search_callback() {
     if(!empty($word)){
         global $wpdb;
         $table = 'wp_dict_tatrus';
+        $result = null;
         $result->item = $wpdb->get_row(
             "SELECT * FROM $table
 				 WHERE name = '$word' ");
@@ -27,6 +28,8 @@ function tatrus_search_callback() {
 
         header( "Content-Type: application/json" );
         echo json_encode($result);
+    }else{
+        wp_send_json_error("empty name param");
     }
     die();
     //wp_send_json_success('json_encode($result)');
@@ -34,6 +37,7 @@ function tatrus_search_callback() {
 }
 
 add_action('wp_ajax_tatrus_get_history', 'tatrus_get_history_callback');
+add_action('wp_ajax_nopriv_tatrus_get_history', 'tatrus_get_history_callback');
 
 function tatrus_get_history_callback() {
 
@@ -42,17 +46,22 @@ function tatrus_get_history_callback() {
     $post = $_GET['post'];
     if(!empty($post)) {
         $ids = get_post_meta($post, DICT_META, true);
-
-        if(!empty($post)) {
+        $result = null;
+        if(!empty($ids)) {
             $table = 'wp_dict_tatrus';
 
             $result = $wpdb->get_results(
                 "SELECT * FROM $table
 				 WHERE id IN ($ids) ");
-
-            header("Content-Type: application/json");
-            echo json_encode($result);
+        }else {
+            $result = array();
         }
+        header("Content-Type: application/json");
+        echo json_encode($result);
+
+    }else{
+        wp_send_json_error("empty post param");
+
     }
     die();
     //wp_send_json_success('json_encode($result)');
@@ -60,6 +69,7 @@ function tatrus_get_history_callback() {
 }
 
 add_action('wp_ajax_tatrus_save_history', 'tatrus_save_history_callback');
+add_action('wp_ajax_nopriv_tatrus_save_history', 'tatrus_save_history_callback');
 
 function tatrus_save_history_callback() {
 
@@ -70,6 +80,8 @@ function tatrus_save_history_callback() {
         $ids = get_post_meta($post, DICT_META, true);
         $ids = empty($ids) ? $id : $ids .','.$id;
         update_post_meta( $post, DICT_META, $ids);
+    }else{
+        wp_send_json_error("empty post or id param");
     }
     die();
     //wp_send_json_success('json_encode($result)');
