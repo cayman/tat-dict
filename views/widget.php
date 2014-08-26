@@ -6,7 +6,10 @@
     <hr ng-show="dictConfig.enabled && dictionary && dictionary.length"/>
 
     <ul ng-show="dictConfig.enabled && dictionary && dictionary.length" class="dict_search_history"  >
-        <li ng-repeat="item in dictionary"><a href="#" ng-click="dictOpen(item.name)" title="{{item.description}}">{{ item.name }}</a></li>
+        <li ng-repeat="item in dictionary">
+            <a href="#" ng-click="dictOpen(item.name)" title="{{item.description}}">{{ item.name }}</a>
+            <a href="#" ng-if="item.parent_name" ng-click="dictOpen(item.parent_name)" title="{{item.parent_description}}">({{ item.parent_name }})</a>
+        </li>
     </ul>
 
     <div ng-show="dictConfig.enabled" class="dict_button_block" ng-click="dictOpen()" ng-swipe-right="dictOpen()">
