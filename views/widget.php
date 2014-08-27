@@ -1,7 +1,7 @@
 <div ng-controller="DictHandlerCtrl" ng-init="postId = <?= $post->ID;?>" >
 
     <input type="checkbox" ng-model="dictConfig.enabled"/> Кабызган<br/>
-    <input type="checkbox" ng-show="dictConfig.enabled" ng-model="dictConfig.auto"/> Автоачылу
+    <span ng-show="dictConfig.enabled" ><input type="checkbox"ng-model="dictConfig.auto"/> Автоачылу</span>
 
     <hr ng-show="dictConfig.enabled && dictionary && dictionary.length"/>
 
@@ -12,7 +12,7 @@
         </li>
     </ul>
 
-    <div ng-show="dictConfig.enabled" class="dict_button_block" ng-click="dictOpen()" ng-swipe-right="dictOpen()">
+    <div ng-show="dictConfig.enabled" class="dict_button_block" ng-click="dictOpen()" ng-swipe-left="dictOpen()">
         <div class="dict_button_text" >Cүзлек</div>
     </div>
 

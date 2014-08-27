@@ -18,7 +18,7 @@ _dictApp.factory('dictRest', function ($resource) {
 });
 
 
-_dictApp.factory('dictService', function ($log, $modal) {
+_dictApp.factory('dictService', function ($log, $filter, $modal) {
     var dictionaryConfig = {
         enabled: true,
         auto: true
@@ -66,6 +66,9 @@ _dictApp.factory('dictService', function ($log, $modal) {
             }
             return null;
         },
+        inArray: function (arr, criteria) {
+            return (arr && arr.length>0) ? ( $filter('filter')(arr, criteria, true)[0] || null) : null ;
+        },
         openModal: function (postId, text) {
            // if (text && text.length < 128){
                 var data = {
@@ -84,45 +87,68 @@ _dictApp.factory('dictService', function ($log, $modal) {
 
 });
 
-_dictApp.factory('dictHistory', function ($log, dictRest, $filter) {
+_dictApp.factory('dictHistory', function ($log, dictRest) {
 
     var dictionaryHistory = {};
 
+    function load(postId){
+        return dictRest.getHistory({post: postId},function success(data){
+            $log.debug('loaded history post='+postId, data);
+        })
+    }
+
     function append(postId,entry){
-        ( dictionaryHistory[postId] || (dictionaryHistory[postId] = [])).push(entry);
+        var dictionary = dictionaryHistory[postId];
+        if(dictionary){
+            var found = false;
+            for(var index=0;index<dictionary.length;index++){
+                if(dictionary[index].name === entry.name){
+                    dictionary[index] = entry;
+                    found = true;
+                }
+            }
+            if(!found){
+                dictionary.push(entry);
+            }
+
+        }else{
+            dictionaryHistory[postId] = [ entry ];
+        }
     }
 
     return {
-        inArray: function (arr, criteria) {
-            return (arr && arr.length>0) ? ( $filter('filter')(arr, criteria)[0] || null) : null ;
-        },
         get: function (postId) {
             if (postId) {
-                return dictionaryHistory[postId] ? dictionaryHistory[postId] :
-                    (dictionaryHistory[postId] = dictRest.getHistory({post: postId},function success(data){
-                        $log.info('getHistory', data);
-                    }));
+                return dictionaryHistory[postId] ?  dictionaryHistory[postId] : (dictionaryHistory[postId] = load(postId));
             } else {
                 return null;
             }
         },
         add: function (postId, text, entry) {
             if (postId && text) {
-                var data = {post: postId, name:text };
-                if (!this.inArray(dictionaryHistory[postId],{ name: text })) {
-                    if(entry) {
-                        data.id = entry.id;
-                    }
-                    dictRest.saveHistory(data,function success(data){
-                        $log.info('saveHistory', data);
-                        append(postId,data);
-                    },function success(error){
-                        //append(postId,result);
-                    });
+                // text is main identify
+                var params = {post: postId,name: text };
 
-                    // entry:  { id:(wp_dict_tatrus.id), name:(wp_dict_tatrus.name), description:(wp_dict_tatrus.name), link: (wp_dict_tatrus.id) }
+                if (entry){
+                  if( entry.name !== text && entry.id < 2000000){
+                     //Мы меняем ссылку на объект (то бишь задаем родителя) для производного объекта
+                      params.parent = entry.id;
+                  }
+                  if(entry.name === text && entry.id > 2000000){//текущий объект
+                       params.description =  entry.description;
+                  }
 
                 }
+
+                $log.debug('saveHistory', params);
+                dictRest.saveHistory(params,function success(data){
+                    $log.info('success');
+                    append(postId,data);
+                },function error(result){
+                    $log.info('error',result);
+                    //append(postId,result);//store in cache
+                });
+
             }
         }
     };
@@ -194,48 +220,54 @@ _dictApp.controller('DictHandlerCtrl', function ( $log, $scope, dictService, dic
 
 
 
-_dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, dictService, $modalInstance, data) {
+_dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, dictRest, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
-    $scope.post = data.post;
-    $scope.history = dictHistory.get(data.post);
-    $scope.request = { text: null ,  name: null,  process: false  };
-    $scope.resultId = null;
-    $scope.request.text = data.text;
+
+    $scope.currentPost = data.post;
+    $scope.selectedText =  null;
+    $scope.searchProcess = null;
+    $scope.searching = false;
+
+    $scope.request = {};
     $scope.result =  {};
 
+    $scope.history = dictHistory.get($scope.currentPost);
+
     if(data.text){
-        $scope.request.text = data.text;
+        $scope.selectedText = data.text;
         $scope.request.name =  data.text;
         search();
     }
 
     $scope.deleteSymbol = function (){
-        if($scope.request.name.length > 2) {
+        if($scope.request.name && $scope.request.name.length > 2) {
             $scope.request.name = $scope.request.name.slice(0, -1);
         }
     };
 
 
     $scope.copyText = function(){
-        var text = dictService.getSelectedText();
-        if(text){
-            $scope.request.name = text;
+        var subSearchText = dictService.getSelectedText();
+        if(subSearchText){
+            $scope.request.name = subSearchText;
         }
     };
 
     //searching
-
     $scope.$watch('request.name', function (newWord, oldWord) {
         if (newWord && newWord!=oldWord ) {
-            search();
+            //$timeout(function(){
+                search();
+            //},300);
         }
     });
 
     function search(){
         if($scope.request.name) {
-            $scope.result.item = dictHistory.inArray($scope.history, { name: $scope.request.name });
+            $scope.result.item = dictService.inArray($scope.history, { name: $scope.request.name });
             if (!$scope.result.item) {
-                $scope.request.process = true
+                $scope.searching = true;
+                $scope.searchProcess = '?';
                 $log.debug('new search:', $scope.request);
                 $scope.result = dictRest.search($scope.request,
                     objectsFound,
@@ -248,18 +280,26 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, 
 
     //Error ajax loaded
     function objectsNotFound() {
-        $scope.request.process = false;
-		$log.debug('not found');
+        $scope.searching = false;
+        $scope.searchProcess = '-';
+		$log.debug('not found:' + $scope.request.name);
     }
 
     //Success ajax loaded
     function objectsFound(value) {
-        $scope.request.process = false;
-		$log.debug(value);
-        if($scope.result.item){
-            $scope.result.selected = $scope.result.item.id;
-        }else if($scope.result.like && $scope.result.like.length > 0){
-            $scope.result.selected = $scope.result.like[0].id;
+        $scope.searching = false;
+        var hasLike = (value.like && value.like.length);
+        if(value.item || hasLike) {
+            $log.debug('found:' + $scope.request.name, $scope.result);
+            $scope.result = value;
+            $scope.searchProcess = $scope.result.item ? '+' : '~';
+
+            if($scope.result.item && hasLike) {
+                $scope.result.selected = $scope.result.item.id;
+            }
+
+        }else{
+            objectsNotFound();
         }
     }
 
@@ -267,8 +307,8 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, 
 
     $scope.$watch('result.selected', function (newId, oldId) {
         if (newId && newId!=oldId) {
-            $scope.result.item = dictHistory.inArray($scope.result.like,{ id: newId } )
-                || dictHistory.inArray($scope.history,{ id: newId });
+            $scope.result.item = dictService.inArray($scope.result.like,{ id: newId } )
+                || dictService.inArray($scope.history,{ id: newId });
         }
 	});
 
@@ -280,7 +320,9 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, dictHistory, dictRest, 
     };
 
     $scope.save = function () {
-        dictHistory.add($scope.post, $scope.request.text, $scope.result.item);
+        if($scope.selectedText) {
+            dictHistory.add($scope.currentPost, $scope.selectedText, $scope.result.item);
+        }
         $modalInstance.close();
     };
 
