@@ -28,7 +28,7 @@ function load_tatdict_javascript() {
         'wp_ajax',
         array(
             'ajaxurl'     => admin_url( 'admin-ajax.php' ),
-            'ajaxnonce'   => wp_create_nonce( 'ajax_post_validation' )
+            'ajaxnonce'   => wp_create_nonce( 'ajax_post_validation' ),
         )
     );
 }

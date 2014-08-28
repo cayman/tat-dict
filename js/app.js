@@ -34,7 +34,6 @@ _dictApp.factory('dictService', function ($log, $filter, $modal) {
         }
     };
 
-
     return {
         getConfig: function(){
             return dictionaryConfig;
@@ -93,7 +92,10 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
 
     function load(postId){
         return dictRest.getHistory({post: postId},function success(data){
-            $log.debug('loaded history post='+postId, data);
+            $log.debug('loaded history post='+postId, data.length);
+        },function(result){
+            $log.debug('error load history post='+postId, result);
+            return [];
         })
     }
 
@@ -234,19 +236,19 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, 
 
     $scope.currentPost = data.post;
     $scope.selectedText =  null;
-    $scope.searchProcess = null;
+    $scope.searchClass = 'dpfx_empty';
     $scope.searching = false;
 
     $scope.request = {};
     $scope.result =  {};
-
-    $scope.history = dictHistory.get($scope.currentPost);
 
     if(data.text){
         $scope.selectedText = data.text;
         $scope.request.name =  data.text;
         search();
     }
+
+    $scope.history = dictHistory.get($scope.currentPost);
 
     $scope.deleteSymbol = function (){
         if($scope.request.name && $scope.request.name.length > 2) {
@@ -276,12 +278,13 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, 
             $scope.result.item = dictService.inArray($scope.history, { name: $scope.request.name });
             if (!$scope.result.item) {
                 $scope.searching = true;
-                $scope.searchProcess = '?';
+                $scope.searchClass = 'dpfx_process';
                 $log.debug('new search:', $scope.request);
                 $scope.result = dictRest.search($scope.request,
                     objectsFound,
                     objectsNotFound);
             }else{
+                $scope.searchClass = 'dpfx_history';
                 $log.debug('selected:',$scope.result.item.id, $scope.result.item.name);
                 $scope.result.selected = $scope.result.item.id;
 
@@ -292,10 +295,10 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, 
     }
 
     //Error ajax loaded
-    function objectsNotFound() {
+    function objectsNotFound(result) {
         $scope.searching = false;
-        $scope.searchProcess = '-';
-		$log.debug('not found:' + $scope.request.name);
+        $scope.searchClass = 'dpfx_error';
+		$log.debug('not found:',result);
     }
 
     //Success ajax loaded
@@ -303,16 +306,16 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, 
         $scope.searching = false;
         var hasLike = (value.like && value.like.length);
         if(value.item || hasLike) {
-            $log.debug('found:' + $scope.request.name, $scope.result);
+            $log.debug('found:',$scope.result);
             $scope.result = value;
-            $scope.searchProcess = $scope.result.item ? '+' : '~';
+            $scope.searchClass = $scope.result.item ? 'dpfx_success' : 'dpfx_like';
 
             if($scope.result.item && hasLike) {
                 $scope.result.selected = $scope.result.item.id;
             }
 
         }else{
-            objectsNotFound();
+            objectsNotFound(value);
         }
     }
 

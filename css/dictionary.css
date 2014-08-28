@@ -1,40 +1,96 @@
 .dict_button_block {
-    display:block;
-    width:20px;
-    height:120px;
-    position:fixed;
-    right:0px;
-    top:200px;
-    z-index:5;
-    border:1px solid #2c807f;
+    display: block;
+    width: 20px;
+    height: 120px;
+    position: fixed;
+    right: 0px;
+    top: 200px;
+    z-index: 5;
+    border: 1px solid #2c807f;
 }
 
-.dict_button_text{
-    color:#2c807f;
+.dict_button_text {
+    color: #2c807f;
     font-size: 10pt;
-    font-weight:lighter;
-    margin:65px 0 0 0;
+    font-weight: lighter;
+    margin: 65px 0 0 0;
     text-align: justify;
 
-    -ms-transform:rotate(270deg); /* IE 9 */
-    -moz-transform:rotate(270deg); /* Firefox */
-    -webkit-transform:rotate(270deg); /* Safari and Chrome */
-    -o-transform:rotate(270deg); /* Opera */
+    -ms-transform: rotate(270deg); /* IE 9 */
+    -moz-transform: rotate(270deg); /* Firefox */
+    -webkit-transform: rotate(270deg); /* Safari and Chrome */
+    -o-transform: rotate(270deg); /* Opera */
     transform: rotate(270deg);
     /*writing-mode: tb-rl;*/
 }
-.dict_search_input{
+
+.dict_search_input {
     width: 180px;
 }
 
-.dict_search_result{
-     font-size: smaller;
-     overflow:auto;
-     max-height: 300px;
- }
+.dict_search_result {
+    font-size: smaller;
+    overflow: auto;
+    max-height: 300px;
+}
 
-.dict_search_history{
-    overflow:auto;
+.dict_search_history {
+    overflow: auto;
     max-height: 200px;
     list-style: square;
+}
+
+.dpfx_process {
+    text-decoration: blink;
+    font-weight: bold;
+    color: #7a43b6;
+}
+
+.dpfx_process:after {
+    content: "?";
+    text-decoration: blink;
+}
+
+.dpfx_empty {
+}
+
+.dpfx_empty:after {
+    content: "";
+}
+
+.dpfx_success {
+    font-weight: bold;
+    color: #2c807f;
+}
+
+.dpfx_success:after {
+    content: "+";
+}
+
+.dpfx_history {
+    font-weight: bold;
+    color: #d58512;
+}
+
+.dpfx_history:after {
+    content: "~";
+}
+
+.dpfx_like {
+    font-weight: bold;
+    color: #2c807f;
+}
+
+.dpfx_like:after {
+    content: "*";
+}
+
+.dpfx_error {
+    font-weight: bold;
+    color: red;
+}
+
+.dpfx_error:after {
+    content: "-";
+
 }
