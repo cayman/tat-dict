@@ -13,13 +13,13 @@
                 <select ng-if="result.like && result.like.length"  ng-model="result.selected" size="5" style="width: 180px">
                     <option ng-repeat="like in result.like"	value="{{ like.id }}"
                             ng-selected="{{like.id === result.item.id}}"
-                            title="{{like.description}}">{{ like.name }}</option>
+                            title="{{like.description}}" ng-bind="like.name"/>
                 </select><br ng-if="result.like && result.like.length"/>
                 <select ng-if="history && history.length" ng-model="result.selected" style="width: 180px"
                         placeholder="Истәлек">
                     <option ng-repeat="item in history"	value="{{ item.id }}"
                             ng-selected="{{item.id === result.item.id}}"
-                            title="{{item.description}}">{{ item.name }}</span></option>
+                            title="{{item.description}}" ng-bind="item.name"/>
                 </select>
 
             </div>
