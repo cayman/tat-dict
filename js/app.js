@@ -127,31 +127,40 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
         add: function (postId, text, entry) {
             if (postId && text) {
                 // text is main identify
-                var params = {post: postId,name: text };
+                var params = {post: postId, name: text };
 
-                if (entry){
-                  if( entry.name !== text && entry.id < 2000000){
-                     //Мы меняем ссылку на объект (то бишь задаем родителя) для производного объекта
-                      params.parent = entry.id;
-                  }
-                  if(entry.name === text && entry.id > 2000000){//текущий объект
-                       params.description =  entry.description;
-                  }
+                if (entry) {
+                    if (entry.name !== text) { //Выделенные текст не равено найденному слову (его id мы не знаем)
+                        //Мы можем меняем только ссылку на объект (то бишь задаем родителя) для производного объекта
+                        if (entry.id < 2000000) {//Выбрали в combo базовое слово
+                            params.parent = entry.id;
+                        } else { //Выбрали в combo производное слово
+                            params.parent = entry.parent > 0 ? entry.parent :  null;
+                        }
+
+                    } else { //Выделенные текст равен найденному слову (его id мы не знаем)
+                        params.id = entry.id;
+                        if (entry.id > 2000000) {//Мы можем меняем только описание производного объект
+                            params.description = entry.description;
+                            params.parent = entry.parent > 0 ? entry.parent :  null;
+                        }
+                        //если объект базовый то его менять нельзя поэтому другие параметры не задаем
+                    }
 
                 }
 
                 $log.debug('saveHistory', params);
-                dictRest.saveHistory(params,function success(data){
+                dictRest.saveHistory(params, function success(data) {
                     $log.info('success');
-                    append(postId,data);
-                },function error(result){
-                    $log.info('error',result);
+                    append(postId, data);
+                }, function error(result) {
+                    $log.info('error', result);
                     //append(postId,result);//store in cache
                 });
 
             }
         }
-    };
+    }
 
 });
 
@@ -272,6 +281,10 @@ _dictApp.controller('DictCtrl', function ( $log, $scope, $timeout, dictHistory, 
                 $scope.result = dictRest.search($scope.request,
                     objectsFound,
                     objectsNotFound);
+            }else{
+                $log.debug('selected:',$scope.result.item.id, $scope.result.item.name);
+                $scope.result.selected = $scope.result.item.id;
+
             }
         }else{
             $scope.result.item = null;

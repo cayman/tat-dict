@@ -15,12 +15,13 @@
     font-weight:lighter;
     margin:65px 0 0 0;
     text-align: justify;
-    -moz-transform: rotate(-90deg);
-    -webkit-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    transform: rotate(-90deg);
-    writing-mode: tb-rl;
+
+    -ms-transform:rotate(270deg); /* IE 9 */
+    -moz-transform:rotate(270deg); /* Firefox */
+    -webkit-transform:rotate(270deg); /* Safari and Chrome */
+    -o-transform:rotate(270deg); /* Opera */
+    transform: rotate(270deg);
+    /*writing-mode: tb-rl;*/
 }
 .dict_search_input{
     width: 180px;

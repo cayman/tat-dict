@@ -18,17 +18,18 @@
                 <select ng-if="history && history.length" ng-model="result.selected" style="width: 180px"
                         placeholder="Истәлек">
                     <option ng-repeat="item in history"	value="{{ item.id }}"
+                            ng-selected="{{item.id === result.item.id}}"
                             title="{{item.description}}">{{ item.name }}</span></option>
                 </select>
 
             </div>
-            <div ng-show="!result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="save()">
+            <div ng-show="!result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
                 <div ng-bind-html="result.item.description" dict-watch="{{ currentPost }}"></div>
             </div>
 
-            <div ng-show="result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="save()">
-                <div ng-bind-html="result.item.description" dict-watch="{{ currentPost }}"></div>
-                <hr/>
+            <div ng-show="result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
+                <textarea ng-readonly="<?= get_current_user_id()!==1 ?>" ng-model="result.item.description" ng-disable></textarea>
+                <h4>мөнәсәбәтле сүз</h4>
                 <div ng-bind-html="result.item.parent_description" dict-watch="{{ currentPost }}"></div>
             </div>
         </div>
@@ -36,7 +37,7 @@
 <!--        <pre>{{ result.item | json }}</pre>-->
         <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Ябырга</button>
-            <button type="button" ng-if="selectedText" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Сакларга</button>
+            <button type="button" ng-if="<?= get_current_user_id()>0 ?> && selectedText" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Сакларга</button>
         </div>
     </div>
 </script>

@@ -11,9 +11,11 @@ class DBDict{
 
     function __construct() {
         global $wpdb;
+        $wpdb->enable_nulls = true;
         $this->db = $wpdb;
         $this->dict = $wpdb->prefix . 'dict_tatrus';
         $this->post = $wpdb->prefix . 'dict_post';
+
     }
 
     public function get($id){
@@ -41,58 +43,63 @@ class DBDict{
             WHERE dic.name = '$name' ");
     }
 
-    public function findByPost($post){
-        if(empty($post)) return null;
+    public function findByPost($postId){
+        if(empty($postId)) return null;
         return $this->db->get_results("
             SELECT dic.id, dic.name, dic.description, dic.parent, dic.user,
                    dic0.name as parent_name, dic0.description as parent_description
             FROM $this->post dp
             INNER JOIN $this->dict dic ON dic.id = dp.dict_id
             LEFT JOIN $this->dict dic0 ON dic0.id = dic.parent
-            WHERE dp.post_id = $post ");
+            WHERE dp.post_id = $postId ");
     }
 
     public function findLike($name){
         if(empty($name)) return null;
-        return $this->db->get_results("SELECT * FROM $this->dict WHERE name like '$name%' && id < 2000000 ");//@todo
+        return $this->db->get_results("SELECT * FROM $this->dict WHERE name like '$name%' ");//@todo
     }
 
-    public function create($name, $description, $parentId)
+    public function create($name, $description, $parentId, $userId)
     {
         $item = array('name' => $name,
             'description' => $description,
-            'parent' => $parentId,
-            'user' => get_current_user_id()
+            'parent' =>  $parentId > 0 ? $parentId : null,
+            'user' => $userId
         );
 
         return $this->db->insert($this->dict, $item,
-            array('%s', '%s', '%d', '%d'));
+            $parentId>0 ? array('%s', '%s', '%d', '%d') : array( '%s', '%s', null, '%d' ));
 
     }
 
-    public function modify($id, $description, $parentId)
+    public function modify($id, $description, $parentId, $userId)
     {
         $fields = array(
             'description' => $description,
-            'parent' => $parentId,
-            'user' => get_current_user_id()
+            'parent' => $parentId > 0 ? $parentId : null,
+            'user' => $userId
         );
         return $this->db->update($this->dict, $fields, array( 'id' => $id ),
-            array('%s', '%d', '%d'), array('%d'));
+            $parentId>0 ? array('%s', '%d', '%d') : array( '%s', null, '%d' ) , array('%d'));
 
-    }
-
-    public function getPost($id, $post)
-    {
-        return $this->db->get_row("SELECT * FROM $this->post WHERE dict_id = $id and post_id = $post ");
     }
 
     //dictpost
-    public function addPost($id, $post)
+    public function getPost($id, $postId, $userId)
     {
-        $user = get_current_user_id();
-        $item = array('dict_id' => $id, 'post_id' => $post, 'user_id' => $user);
-        return $this->db->insert($this->post, $item, array('%d', '%d'));
+        return $this->db->get_row("SELECT * FROM $this->post WHERE dict_id = $id and post_id = $postId and user_id = $userId");
+    }
+
+    public function addPost($id, $post, $userId)
+    {
+        $item = array('dict_id' => $id, 'post_id' => $post, 'user_id' => $userId);
+        return $this->db->insert($this->post, $item, array('%d', '%d', '%d'));
+    }
+
+    public function deletePost($id, $post, $userId)
+    {
+        $item = array('dict_id' => $id, 'post_id' => $post, 'user_id' => $userId);
+        return $this->db->delete($this->post, $item, array('%d', '%d', '%d'));
     }
 
 
