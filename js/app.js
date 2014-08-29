@@ -71,7 +71,7 @@ _dictApp.factory('dictService', function ($log, $filter, $modal) {
         inArray: function (arr, criteria) {
             return (arr && arr.length > 0) ? ( $filter('filter')(arr, criteria, true)[0] || null) : null;
         },
-        openModal: function (postId, text, callback) {
+        openModal: function (postId, text) {
             var data = {
                 text: text,
                 post: postId
@@ -80,15 +80,7 @@ _dictApp.factory('dictService', function ($log, $filter, $modal) {
             modalConfig.resolve.data = function () {
                 return data;
             };
-            var modalInstance = $modal.open(modalConfig);
-
-            if (callback) {
-                modalInstance.result.then(function (item) {
-                    callback(item);
-                }, function () {
-                    $log.log('Modal dismissed at: ' + new Date());
-                });
-            }
+            $modal.open(modalConfig);
         }
 
     };
@@ -99,14 +91,10 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
 
     var dictionaryHistory = {};
 
-    var loadedCallbacks = [];
 
     function load(postId) {
         return dictRest.getHistory({post: postId}, function success(data) {
-            $log.debug('loaded history post=' + postId, data.length);
-            loadedCallbacks.forEach(function (callback) {
-                callback(postId, data);
-            });
+            $log.debug('loaded history post=' + postId + ' items=' + data.length);
         }, function (result) {
             $log.debug('error load history post=' + postId, result);
             return [];
@@ -132,10 +120,8 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
         }
     }
 
+
     return {
-        addLoadedCallback: function (callback) {
-            loadedCallbacks.push(callback);
-        },
         get: function (postId, successCallback) {
             if (postId) {
                 return dictionaryHistory[postId] ? dictionaryHistory[postId] : (dictionaryHistory[postId] = load(postId, successCallback));
@@ -190,45 +176,47 @@ _dictApp.directive('dictWatch', function ($log, $modal, dictService, dictHistory
     return function (scope, elem, attrs) {
         var postId = attrs.dictWatch;
         var config = dictService.getConfig();
-        var history = dictHistory.get(postId);
+        scope.history = dictHistory.get(postId);
 
-        function highlight(item) {
-            var tag = '<a name="dic' + item.id + '" class="dict_word" ng-click="highlightOpen(' + item.id + ')">' + item.name + '</a>';
-            var replaced = elem.html().replace(new RegExp(item.name, 'ig'), tag);
-            elem.html(replaced);
-        }
-
-        function highlightWord(item) {
-            highlight(item);
-            $compile(elem)(scope);
-        }
-
-        dictHistory.addLoadedCallback(function (post, history) {
-            if (config.enabled && history.length > 0 && post == postId) {
-                history.forEach(highlight);
-                $compile(elem)(scope);
+        elem.on('mouseup', function () {
+            if (config.enabled && config.auto) {
+                var text = dictService.getSelectedText();
+                if (text && text.length < 100) {
+                    dictService.openModal(postId, text);
+                }
             }
         });
 
         scope.highlightOpen = function (id) {
+            $log.info('highlightOpen', id);
             if (config.enabled) {
-                 history.forEach(function(item){
-                    if(item.id == id){
+                scope.history.forEach(function (item) {
+                    if (item.id == id) {
                         dictService.openModal(postId, item.name);
                     }
                 });
             }
         };
 
+        function highlight(item) {
+            if (item && item.name) {
+                var tag = '<a name="dic' + item.id + '" class="dict_word" ng-click="highlightOpen(' + item.id + ')">' + item.name + '</a>';
+                var replaced = (item.name.length > 3) ?
+                    elem.html().replace(new RegExp('\\s' + item.name, 'ig'), ' ' + tag) :
+                    elem.html().replace(new RegExp('\\s' + item.name + '\\s', 'ig'), ' ' + tag + ' ');
 
-        elem.on('mouseup', function () {
-            if (config.enabled && config.auto) {
-                var text = dictService.getSelectedText();
-                if (text && text.length < 100) {
-                    dictService.openModal(postId, text, highlightWord);
-                }
+                elem.html(replaced);
             }
-        });
+        }
+
+        scope.$watch('history', function (list, oldList) {
+            if (list.length !== oldList.length) {
+                $log.info('highlight items', scope.history.length);
+                scope.history.forEach(highlight);
+                $compile(elem.contents())(scope);
+            }
+        }, true);
+
     }
 });
 
