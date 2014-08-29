@@ -24,6 +24,11 @@
     /*writing-mode: tb-rl;*/
 }
 
+.dict_word {
+    background-color: #c0e6f8;
+    color: #2a5756;
+}
+
 .dict_search_input {
     width: 180px;
 }
@@ -93,4 +98,31 @@
 .dpfx_error:after {
     content: "-";
 
+}
+
+
+table.rule_grammar {
+    border-collapse: collapse;
+    margin-left: 2em;
+    margin-right: 2em;
+    width: 90%;
+}
+table.rule_grammar td,
+table.rule_grammar th {
+    display: table-cell;
+    border: 1px dotted #b3b3b3;
+    vertical-align: inherit;
+    padding: 0.3em;
+    color: #666;
+}
+table.rule_grammar td {
+    font-weight: 400;
+}
+table.rule_grammar th {
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: 0.0em;
+    line-height: 1.5em;
+    text-transform: none;
+    text-align: center;
 }
