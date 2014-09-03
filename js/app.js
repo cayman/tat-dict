@@ -1,18 +1,31 @@
 var _dictApp = angular.module('wpApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngTouch', 'ui.bootstrap']);
 
-_dictApp.factory('dictRest', function ($resource) {
+_dictApp.factory('dictRest', function ($log, $resource) {
     var ajaxUrl = "./example.json";
     var ajaxNonce = null;
 
     if (angular.isObject(wp_ajax)) {
         ajaxUrl = wp_ajax.ajaxurl;
-        ajaxNonce = wp_ajax.ajaxnonce;
+        ajaxNonce = atob(wp_ajax.ajaxnonce);
+    }
+
+    function decodeResponse(response, header) {
+        if(angular.isString(response) && response.trim()!=-1 && response.trim()!=0) {
+            var jsonResponse = angular.fromJson(response);
+            if (jsonResponse.success) {
+                return JSON.parse(atob(jsonResponse.data));
+            } else {
+                return jsonResponse;
+            }
+        }
+        $log.debug('error response');
+        return null
     }
 
     return $resource(ajaxUrl, {}, {
-        search: {params: {security: ajaxNonce, action: 'tatrus_search'}, cache: true },
-        getHistory: {params: {security: ajaxNonce, action: 'tatrus_get_history'}, isArray: true},
-        saveHistory: {params: {security: ajaxNonce, action: 'tatrus_save_history'} }
+        search: {params: {security: ajaxNonce, action: 'tatrus_search'}, cache: true,  transformResponse:  decodeResponse},
+        getHistory: {params: {security: ajaxNonce, action: 'tatrus_get_history'}, isArray: true,  transformResponse:  decodeResponse},
+        saveHistory: {params: {security: ajaxNonce, action: 'tatrus_save_history'} ,  transformResponse:  decodeResponse }
     });
 
 });
