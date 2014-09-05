@@ -1,2 +1,4 @@
 /.idea
-/lib
+/bower_components
+/node_modules
+/build

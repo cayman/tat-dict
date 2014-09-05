@@ -11,6 +11,19 @@ function _rp($param)
     return empty($_GET[$param]) ? null : trim($_GET[$param]);
 }
 
+//function fnEncrypt($value, $secretKey, $iv) {
+//    return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $secretKey, $value, MCRYPT_MODE_CBC, $iv));
+//}
+
+function encodeDescription(&$row,$key){
+    //$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_RAND);
+
+   // if(!empty($row->description))
+  //      $row->description = base64_encode($row->description);
+  //  if(!empty($row->parent_description))
+  //      $row->parent_description= base64_encode( $row->parent_description);
+}
+
 add_action('wp_ajax_tatrus_search', 'tatrus_search_callback');
 add_action('wp_ajax_nopriv_tatrus_search', 'tatrus_search_callback');
 
@@ -40,8 +53,7 @@ function tatrus_search_callback()
             header('HTTP/1.0 206 Partial Content');
     }
 
-    //wp_send_json($result);
-    wp_send_json_success(base64_encode(json_encode($result)));
+    wp_send_json_success($result);
 
 }
 
@@ -67,8 +79,9 @@ function tatrus_get_history_callback()
     if (count($result) == 0)
         header('HTTP/1.0 204 No Content');
 
+    array_walk($result,'encodeDescription');
     //wp_send_json($result);
-    wp_send_json_success(base64_encode(json_encode($result)));
+    wp_send_json_success($result);
 
 }
 
@@ -203,6 +216,6 @@ function tatrus_save_history_callback()
     }
 
    // wp_send_json($result);
-    wp_send_json_success(base64_encode(json_encode($result)));
+    wp_send_json_success($result);
 
 }

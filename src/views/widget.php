@@ -1,4 +1,4 @@
-<div ng-controller="DictHandlerCtrl" ng-init="postId = <?= $post->ID;?>" >
+<div ng-controller="dictHandlerCtrl" ng-init="postId = <?= $post->ID;?>" >
 
     <input type="checkbox" ng-model="dictConfig.enabled"/> Кабызган<br/>
     <span ng-show="dictConfig.enabled" ><input type="checkbox"ng-model="dictConfig.auto"/> Автоачылу</span>

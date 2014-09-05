@@ -13,7 +13,7 @@ _dictApp.factory('dictRest', function ($log, $resource) {
         if(angular.isString(response) && response.trim()!=-1 && response.trim()!=0) {
             var jsonResponse = angular.fromJson(response);
             if (jsonResponse.success) {
-                return JSON.parse(atob(jsonResponse.data));
+                return jsonResponse.data;
             } else {
                 return jsonResponse;
             }
@@ -24,14 +24,14 @@ _dictApp.factory('dictRest', function ($log, $resource) {
 
     return $resource(ajaxUrl, {}, {
         search: {params: {security: ajaxNonce, action: 'tatrus_search'}, cache: true,  transformResponse:  decodeResponse},
-        getHistory: {params: {security: ajaxNonce, action: 'tatrus_get_history'}, isArray: true,  transformResponse:  decodeResponse},
-        saveHistory: {params: {security: ajaxNonce, action: 'tatrus_save_history'} ,  transformResponse:  decodeResponse }
+        getHistory: {params: {security: ajaxNonce, action: 'tatrus_get_history'}, isArray: true,  transformResponse:  decodeResponse },
+        saveHistory: {params: {security: ajaxNonce, action: 'tatrus_save_history'} ,  transformResponse:  decodeResponse}
     });
 
 });
 
 
-_dictApp.factory('dictService', function ($log, $filter, $modal) {
+_dictApp.factory('dictService', function ($log, $filter, $modal, $window, $document, $sniffer) {
     var dictionaryConfig = {
         enabled: true,
         auto: true
@@ -39,7 +39,7 @@ _dictApp.factory('dictService', function ($log, $filter, $modal) {
 
     var modalConfig = {
         templateUrl: 'dictModalContent.html',
-        controller: 'DictCtrl',
+        controller: 'dictCtrl',
         backdrop: 'static',
         keyboard: true,
         resolve: {
@@ -52,33 +52,20 @@ _dictApp.factory('dictService', function ($log, $filter, $modal) {
             return dictionaryConfig;
         },
         getSelectedText: function () {
-            var selectedText = "";
+            var selectedText = null;
             var selection;
-            if (window.getSelection) {
-                selection = window.getSelection();
-                if (selection && selection.type !== 'Caret' && selection.type !== 'None') {
-                    $log.debug('window.getSelection', selection);
-                    selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
-                }
 
-            } else if (document.getSelection) {
-                selection = document.getSelection();
-                $log.debug('document.getSelection', selection);
-                selectedText = (selection.rangeCount) ? selection.getRangeAt(0).toString() : selection.toString();
-
-            } else if (document.selection) {
-                selection = document.selection;
-                $log.debug('document.selection', selection);
+            if (!$sniffer.msie) {
+                selection = $window.getSelection();
+                selectedText = (selection.rangeCount) > 1 ? selection.getRangeAt(0).toString() : selection.toString();
+            } else {
+                selection = $document.selection;
                 selectedText = selection.createRange().text;
             }
-            if (angular.isString(selectedText)) {
-                var trimmedText = selectedText.trim();
-                if (trimmedText.length > 1) {
-                    return trimmedText;
-                }
 
-            }
-            return null;
+            $log.debug('selected', selectedText );
+
+            return (selectedText && selectedText.trim().length > 1) ? selectedText.trim() : null;
         },
 
         inArray: function (arr, criteria) {
@@ -262,7 +249,7 @@ _dictApp.directive('stopEvent', function () {
 //
 //});
 
-_dictApp.controller('DictHandlerCtrl', function ($log, $scope, dictService, dictHistory) {
+_dictApp.controller('dictHandlerCtrl', function ($log, $scope, dictService, dictHistory) {
     $log.info('DictHandlerCtrl:' + $scope.postId);
     $scope.dictConfig = dictService.getConfig();
     $scope.dictionary = null;
@@ -277,10 +264,11 @@ _dictApp.controller('DictHandlerCtrl', function ($log, $scope, dictService, dict
             dictService.openModal($scope.postId, text || dictService.getSelectedText());
         }
     }
+
 });
 
 
-_dictApp.controller('DictCtrl', function ($log, $scope, $timeout, dictHistory, dictRest, dictService, $modalInstance, data) {
+_dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, dictRest, dictService, $modalInstance, data) {
     $log.info('DictCtrl');
 
     $scope.currentPost = data.post;
@@ -374,12 +362,31 @@ _dictApp.controller('DictCtrl', function ($log, $scope, $timeout, dictHistory, d
 
     //change selectbox
 
+    function decodeDescription(value){
+        return value;
+//        atob(CryptoJS.AES.decrypt($scope.result.raw, 'zarur',{
+//              mode: mode,
+//                padding: padding
+//            }
+    }
+
     $scope.$watch('result.selected', function (newId, oldId) {
         if (newId && newId != oldId) {
             $scope.result.item = dictService.inArray($scope.result.like, { id: newId })
                 || dictService.inArray($scope.history, { id: newId });
+
+//            if($scope.result.item) {
+//                if (!$scope.result.item._description && $scope.result.item.description ) {
+//                    $scope.result.item._description = decodeDescription($scope.result.item.description);
+//                }
+//                if (!$scope.result.item._parent_description && $scope.result.item._parent_description ) {
+//                    $scope.result.item._parent_description = decodeDescription($scope.result.item._parent_description);
+//                }
+//            }
         }
     });
+
+
 
 
     //closing
@@ -395,7 +402,4 @@ _dictApp.controller('DictCtrl', function ($log, $scope, $timeout, dictHistory, d
         $modalInstance.close($scope.selectedText);
     };
 
-
 });
-
-	
