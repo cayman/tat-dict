@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="dictModalContent.html" ng-init="userId = <?php echo get_current_user_id() ?>">
+<script type="text/ng-template" id="dictModalContent.html">
     <div class="modal-content">
         <div class="modal-header" ng-swipe-left="close()" ng-swipe-right="close()">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">×</button>
@@ -27,9 +27,9 @@
             <div ng-show="!result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
                 <div ng-bind-html="result.item.description" dict-watch="{{ currentPost }}"></div>
             </div>
-
+            <?php $userId = get_current_user_id(); ?>
             <div ng-show="result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
-                <textarea ng-readonly="userId === 1" ng-model="result.item.description" ng-disable></textarea>
+                <textarea ng-model="result.item.description"<?php echo ($userId !== 1) ? ' readonly': '' ?>></textarea>
                 <h4>мөнәсәбәтле сүз</h4>
                 <div ng-bind-html="result.item.parent_description" dict-watch="{{ currentPost }}"></div>
             </div>
@@ -38,7 +38,9 @@
 <!--        <pre>{{ result.item | json }}</pre>-->
         <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Ябырга</button>
-            <button type="button" ng-if="userId > 0 && selectedText" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Сакларга</button>
+            <?php if($userId>0){ ?>
+            <button type="button" ng-if="selectedText" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Сакларга</button>
+            <?php } ?>
         </div>
     </div>
 </script>

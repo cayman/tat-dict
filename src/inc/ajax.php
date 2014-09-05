@@ -22,6 +22,7 @@ function encodeDescription(&$row,$key){
   //      $row->description = base64_encode($row->description);
   //  if(!empty($row->parent_description))
   //      $row->parent_description= base64_encode( $row->parent_description);
+    //    $int_id = absint( $row->ID );
 }
 
 add_action('wp_ajax_tatrus_search', 'tatrus_search_callback');
@@ -47,13 +48,14 @@ function tatrus_search_callback()
         $result->like = $db->findLike($name);
 
     if (empty($result->item)) {
-        if (count($result->like) == 0)
+        if (count($result->like) == 0) {
             header('HTTP/1.0 204 No Content');
+        }
         else
             header('HTTP/1.0 206 Partial Content');
     }
 
-    wp_send_json_success($result);
+    wp_send_json($result);
 
 }
 
@@ -76,12 +78,12 @@ function tatrus_get_history_callback()
     $db = new DBDict();
     $result = $db->findByPost($post, empty($userId) ? 1 : $userId);
 
-    if (count($result) == 0)
+    if (count($result) == 0) {
         header('HTTP/1.0 204 No Content');
+    }
 
     array_walk($result,'encodeDescription');
-    //wp_send_json($result);
-    wp_send_json_success($result);
+    wp_send_json($result);
 
 }
 
@@ -215,7 +217,6 @@ function tatrus_save_history_callback()
         wp_send_json_error("error append to post:" . $db->lastError());
     }
 
-   // wp_send_json($result);
-    wp_send_json_success($result);
+    wp_send_json($result);
 
 }

@@ -2,6 +2,7 @@ module.exports = function (grunt) {
 
     var taskConfig = {
         pkg: grunt.file.readJSON('package.json'),
+        pass: grunt.file.readJSON('.ftppass'),
         jsApp: 'app',
         banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -9,7 +10,8 @@ module.exports = function (grunt) {
 
         jshint: {
             options: {
-                jshintrc: '.jshintrc'
+                jshintrc: '.jshintrc',
+                force: true
             },
             all: [
                 'Gruntfile.js',
@@ -48,6 +50,33 @@ module.exports = function (grunt) {
             }
         },
 
+        ngAnnotate: {
+            js: {
+                files: [
+                    {
+                        expand: true,
+                        src: '<%=pkg.build %>/js/<%=jsApp %>.js',
+                        ext: '.annotated.js',
+                        extDot: 'last'       // Extensions in filenames begin after the last dot
+                    }
+                ]
+            }
+        },
+
+        uglify: {
+            options: {
+                sourceMap: true
+            },
+            js: {
+                files: [
+                    {
+                        src: '<%=pkg.build %>/js/<%=jsApp %>.annotated.js',
+                        dest: '<%=pkg.build %>/js/<%=jsApp %>.min.js'
+                    }
+                ]
+            }
+        },
+
         copy: {
             plugin: {
                 expand: true,
@@ -60,7 +89,7 @@ module.exports = function (grunt) {
                 cwd: 'bower_components',
                 src: [ '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
                     '!jquery/**', '!bootstrap/**',
-                    '!src/**', '!test/**', '!grunt/**','!sample/**'],
+                    '!src/**', '!test/**', '!grunt/**', '!sample/**'],
                 dest: '<%=pkg.build %>/lib'
             },
             bootstrap: {
@@ -71,24 +100,12 @@ module.exports = function (grunt) {
             }
         },
 
-        uglify: {
-            options: {
-                sourceMap: true
-            },
-            js: {
-                files: [
-                    {src: 'build/js/app.js', dest: 'build/js/app.min.js'}
-                ]
-            }
-        },
-
-
         watch: {
             all: {
                 options: {
                     cwd: '<%= pkg.src %>/src'
                 },
-                files: [ '**/*.php', '**/*.json', '**/*.js','**/*.yml','**/*.sass','**/*.css'],
+                files: [ '**/*.php', '**/*.json', '**/*.js', '**/*.yml', '**/*.sass', '**/*.css'],
                 tasks: ['build']
             }
         },
@@ -96,13 +113,23 @@ module.exports = function (grunt) {
         'ftp-deploy': {
             build: {
                 auth: {
-                    host: 'hn3.justhost.ru',
+                    host: '<%=pass.host %>',
                     port: 21,
                     authKey: 'key1'
                 },
                 src: 'build',
-                dest: '/domains/zarur.ru/public_html/wp-content/plugins/tat-dict',
-                exclusions: ['temp']
+                dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
+                exclusions: ['temp', 'lib', '**/*.js', '!**/*.min.js']
+            },
+            full: {
+                auth: {
+                    host: '<%=pass.host %>',
+                    port: 21,
+                    authKey: 'key1'
+                },
+                src: 'build',
+                dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
+                exclusions: ['temp', '**/*.js', '!**/*.min.js']
             }
         }
 
@@ -115,18 +142,19 @@ module.exports = function (grunt) {
         'jshint:all',
         'clean:all',
         'concat:js',
+        'ngAnnotate:js',
+        'uglify:js',
         'copy',
-        'uglify:js'
-
-
+        'ftp-deploy:build'
     ]);
 
     grunt.registerTask('start', [
         'jshint:all',
         'clean:all',
         'concat:js',
-        'copy',
+        'ngAnnotate:js',
         'uglify:js',
+        'copy',
         'watch:all'
     ]);
 

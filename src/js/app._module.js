@@ -10,15 +10,14 @@ _dictApp.factory('dictRest', function ($log, $resource) {
     }
 
     function decodeResponse(response, header) {
-        if(angular.isString(response) && response.trim()!=='-1' && response.trim()!=='0') {
-            var jsonResponse = angular.fromJson(response);
-            if (jsonResponse.success) {
-                return jsonResponse.data;
-            } else {
-                return jsonResponse;
+        if(response  &&  response.length>0 ){
+            var first = response.trim().substr(0,1);
+            if(first==='[' || first==='{') {
+                return angular.fromJson(response);
+            }else {
+                $log.debug(response);
             }
         }
-        $log.debug('error response');
         return null;
     }
 
@@ -68,8 +67,8 @@ _dictApp.factory('dictService', function ($log, $filter, $modal, $window, $docum
             return (selectedText && selectedText.trim().length > 1) ? selectedText.trim() : null;
         },
 
-        inArray: function (arr, criteria) {
-            return (arr && arr.length > 0) ? ( $filter('filter')(arr, criteria, true)[0] || null) : null;
+        inArray: function (arr, criteria, comparator) {
+            return (arr && arr.length > 0) ? ( $filter('filter')(arr, criteria, comparator)[0] || null) : null;
         },
         openModal: function (postId, text) {
             var data = {

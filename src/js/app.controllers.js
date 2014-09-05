@@ -46,7 +46,7 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
 
     function search() {
         if ($scope.request.name) {
-            $scope.result.item = dictService.inArray($scope.history, { name: $scope.request.name });
+            $scope.result.item = dictService.inArray($scope.history, { name: $scope.request.name },true);
 
             if (!$scope.result.item) {
                 $scope.searching = true;

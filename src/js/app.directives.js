@@ -17,11 +17,10 @@ _dictApp.directive('dictWatch', function ($log, $modal, dictService, dictHistory
         scope.highlightOpen = function (id) {
             $log.info('highlightOpen', id);
             if (config.enabled) {
-                scope.history.forEach(function (item) {
-                    if (item.id === id) {
-                        dictService.openModal(postId, item.name);
-                    }
-                });
+                var  item = dictService.inArray(scope.history, { id: id });
+                if(item){
+                    dictService.openModal(postId, item.name);
+                }
             }
         };
 

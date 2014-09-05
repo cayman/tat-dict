@@ -25,7 +25,7 @@ function load_tatdict_javascript() {
     wp_enqueue_script('angular-bootstrap', TATDICT_URL . 'lib/angular-bootstrap/ui-bootstrap-tpls.js', array( 'angular' ),'0.11.0');
 
     /*Loading App*/
-    wp_enqueue_script('angular-app', TATDICT_URL . 'js/app.js', array( 'angular-bootstrap' ),'0.0.1');
+    wp_enqueue_script('angular-app', TATDICT_URL . 'js/app.min.js', array( 'angular-bootstrap' ),'1.0.6');
 
     wp_localize_script(
         'angular-app',

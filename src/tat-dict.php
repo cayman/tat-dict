@@ -5,8 +5,6 @@ Plugin Name: Tatar dictionary
 Description: Tatar-russion dictionary
 Version: 1.0
 Author: Zakirov Rustem
-Author URI: http://zarur.ru
-Plugin URI: http://zarur.ru/tat-dict
 */
 error_reporting(E_ALL); 
 ini_set("display_errors", 1); 
