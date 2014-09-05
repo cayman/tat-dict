@@ -60,8 +60,14 @@ module.exports = function (grunt) {
             lib: {
                 expand: true,
                 cwd: '<%=bower %>',
-                src: [ '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
+                src: [ '!jquery/**', '!bootstrap/**', '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
                     '!src/**', '!test/**', '!grunt/**','!sample/**'],
+                dest: '<%=dest %>/lib'
+            },
+            bootstrap: {
+                expand: true,
+                cwd: '<%=bower %>',
+                src: [ 'bootstrap/dist/**.*'],
                 dest: '<%=dest %>/lib'
             }
         },
