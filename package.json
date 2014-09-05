@@ -1,7 +1,13 @@
 {
-    "name": "tat-dict",
+    "name": "Tatar dictionary",
     "version": "1.0.5",
-    "description": "Tatar dictionary wordpress plugin",
+    "description": "Tatar-russion dictionary",
+    "main": "tat-dict.php",
+    "src": "src",
+    "build": "build",
+    "author": "Zakirov Rustem",
+
+
     "devDependencies": {
         "grunt": "~0.4.0",
         "grunt-contrib-clean": ">=0.5.0",

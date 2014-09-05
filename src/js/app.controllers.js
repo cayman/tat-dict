@@ -12,7 +12,7 @@ _dictApp.controller('dictHandlerCtrl', function ($log, $scope, dictService, dict
         if ($scope.dictConfig.enabled) {
             dictService.openModal($scope.postId, text || dictService.getSelectedText());
         }
-    }
+    };
 
 });
 
@@ -29,11 +29,6 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
     $scope.request = {};
     $scope.result = {};
 
-    if (data.text) {
-        $scope.request.name = $scope.selectedText = data.text;
-        search();
-    }
-
 
     $scope.deleteSymbol = function () {
         if ($scope.request.name && $scope.request.name.length > 2) {
@@ -48,19 +43,6 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
             $scope.request.name = subSearchText;
         }
     };
-
-    var searchWord = null;
-    //searching
-    $scope.$watch('request.name', function (newWord, oldWord) {
-        if (newWord && newWord != oldWord) {
-            searchWord = newWord;
-            $timeout(function () {
-                if (searchWord === newWord) {
-                    search();
-                }
-            }, 900);
-        }
-    });
 
     function search() {
         if ($scope.request.name) {
@@ -109,6 +91,19 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
         }
     }
 
+    var searchWord = null;
+    //searching
+    $scope.$watch('request.name', function (newWord, oldWord) {
+        if (newWord && newWord !== oldWord) {
+            searchWord = newWord;
+            $timeout(function () {
+                if (searchWord === newWord) {
+                    search();
+                }
+            }, 900);
+        }
+    });
+
     //change selectbox
 
     function decodeDescription(value){
@@ -120,9 +115,9 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
     }
 
     $scope.$watch('result.selected', function (newId, oldId) {
-        if (newId && newId != oldId) {
-            $scope.result.item = dictService.inArray($scope.result.like, { id: newId })
-                || dictService.inArray($scope.history, { id: newId });
+        if (newId && newId !== oldId) {
+            $scope.result.item = dictService.inArray($scope.result.like, { id: newId }) ||
+                dictService.inArray($scope.history, { id: newId });
 
 //            if($scope.result.item) {
 //                if (!$scope.result.item._description && $scope.result.item.description ) {
@@ -134,9 +129,6 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
 //            }
         }
     });
-
-
-
 
     //closing
 
@@ -150,5 +142,12 @@ _dictApp.controller('dictCtrl', function ($log, $scope, $timeout, dictHistory, d
         }
         $modalInstance.close($scope.selectedText);
     };
+
+
+    if (data.text) {
+        $scope.request.name = $scope.selectedText = data.text;
+        search();
+    }
+
 
 });

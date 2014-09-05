@@ -18,7 +18,7 @@ _dictApp.directive('dictWatch', function ($log, $modal, dictService, dictHistory
             $log.info('highlightOpen', id);
             if (config.enabled) {
                 scope.history.forEach(function (item) {
-                    if (item.id == id) {
+                    if (item.id === id) {
                         dictService.openModal(postId, item.name);
                     }
                 });
@@ -44,7 +44,7 @@ _dictApp.directive('dictWatch', function ($log, $modal, dictService, dictHistory
             }
         }, true);
 
-    }
+    };
 });
 
 _dictApp.directive('stopEvent', function () {

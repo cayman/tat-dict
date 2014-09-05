@@ -1,16 +1,16 @@
 var _dictApp = angular.module('wpApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngTouch', 'ui.bootstrap']);
 
 _dictApp.factory('dictRest', function ($log, $resource) {
-    var ajaxUrl = "./example.json";
+    var ajaxUrl = './example.json';
     var ajaxNonce = null;
 
-    if (angular.isObject(wp_ajax)) {
-        ajaxUrl = wp_ajax.ajaxurl;
-        ajaxNonce = atob(wp_ajax.ajaxnonce);
+    if (angular.isObject(wpAjax)) {
+        ajaxUrl = wpAjax.url;
+        ajaxNonce = atob(wpAjax.nonce);
     }
 
     function decodeResponse(response, header) {
-        if(angular.isString(response) && response.trim()!=-1 && response.trim()!=0) {
+        if(angular.isString(response) && response.trim()!=='-1' && response.trim()!=='0') {
             var jsonResponse = angular.fromJson(response);
             if (jsonResponse.success) {
                 return jsonResponse.data;
@@ -19,7 +19,7 @@ _dictApp.factory('dictRest', function ($log, $resource) {
             }
         }
         $log.debug('error response');
-        return null
+        return null;
     }
 
     return $resource(ajaxUrl, {}, {
@@ -98,7 +98,7 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
         }, function (result) {
             $log.debug('error load history post=' + postId, result);
             return [];
-        })
+        });
     }
 
     function append(postId, entry) {
@@ -166,7 +166,7 @@ _dictApp.factory('dictHistory', function ($log, dictRest) {
 
             }
         }
-    }
+    };
 
 });
 

@@ -1,13 +1,11 @@
 module.exports = function (grunt) {
 
     var taskConfig = {
-        src: 'src',
-        dest: 'build',
+        pkg: grunt.file.readJSON('package.json'),
         jsApp: 'app',
-        bower: 'lib',
-        banner: '/*! <%= cmp().type %>.<%= cmp().name %> - v<%= cmp().version %> - ' +
+        banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-            ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= cmp().authors %> */',
+            ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %> */',
 
         jshint: {
             options: {
@@ -15,7 +13,7 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%=src %>/**/*.js'
+                '<%=pkg.src %>/**/*.js'
             ]
         },
 
@@ -27,7 +25,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: [
-                            '<%=dest %>/**/*'
+                            '<%=pkg.build %>/**/*'
                         ]
                     }
                 ]
@@ -37,14 +35,14 @@ module.exports = function (grunt) {
         concat: {
             options: {
                 banner: '<%= banner %>\n',
-                separator: '\n/*-------------*/\n',
+                separator: '\n/*----------------------------------------*/\n',
                 nonull: true
             },
             js: {
                 files: [
                     {
-                        src: '<%=src %>/js/*.js',
-                        dest: '<%=dest %>/js/<%=jsApp %>.js'
+                        src: '<%=pkg.src %>/js/*.js',
+                        dest: '<%=pkg.build %>/js/<%=jsApp %>.js'
                     }
                 ]
             }
@@ -53,34 +51,58 @@ module.exports = function (grunt) {
         copy: {
             plugin: {
                 expand: true,
-                cwd: '<%=src %>',
+                cwd: '<%=pkg.src %>',
                 src: [ '**/*.css', '**/*.json', '**/*.php'],
-                dest: '<%=dest %>'
+                dest: '<%=pkg.build %>'
             },
             lib: {
                 expand: true,
-                cwd: '<%=bower %>',
-                src: [ '!jquery/**', '!bootstrap/**', '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
+                cwd: 'bower_components',
+                src: [ '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
+                    '!jquery/**', '!bootstrap/**',
                     '!src/**', '!test/**', '!grunt/**','!sample/**'],
-                dest: '<%=dest %>/lib'
+                dest: '<%=pkg.build %>/lib'
             },
             bootstrap: {
                 expand: true,
-                cwd: '<%=bower %>',
-                src: [ 'bootstrap/dist/**.*'],
-                dest: '<%=dest %>/lib'
+                cwd: 'bower_components',
+                src: [ 'bootstrap/dist/**'],
+                dest: '<%=pkg.build %>/lib'
             }
         },
 
+        uglify: {
+            options: {
+                sourceMap: true
+            },
+            js: {
+                files: [
+                    {src: 'build/js/app.js', dest: 'build/js/app.min.js'}
+                ]
+            }
+        },
 
 
         watch: {
             all: {
                 options: {
-                    cwd: '<%= src %>/src'
+                    cwd: '<%= pkg.src %>/src'
                 },
                 files: [ '**/*.php', '**/*.json', '**/*.js','**/*.yml','**/*.sass','**/*.css'],
                 tasks: ['build']
+            }
+        },
+
+        'ftp-deploy': {
+            build: {
+                auth: {
+                    host: 'hn3.justhost.ru',
+                    port: 21,
+                    authKey: 'key1'
+                },
+                src: 'build',
+                dest: '/domains/zarur.ru/public_html/wp-content/plugins/tat-dict',
+                exclusions: ['temp']
             }
         }
 
@@ -93,7 +115,10 @@ module.exports = function (grunt) {
         'jshint:all',
         'clean:all',
         'concat:js',
-        'copy'
+        'copy',
+        'uglify:js'
+
+
     ]);
 
     grunt.registerTask('start', [
@@ -101,6 +126,7 @@ module.exports = function (grunt) {
         'clean:all',
         'concat:js',
         'copy',
+        'uglify:js',
         'watch:all'
     ]);
 

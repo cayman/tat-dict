@@ -19,7 +19,6 @@ function load_tatdict_javascript() {
     wp_enqueue_script('angular-sanitize', TATDICT_URL . 'lib/angular-sanitize/angular-sanitize.js', array( 'angular' ),'1.3.0');
     wp_enqueue_script('angular-touch', TATDICT_URL . 'lib/angular-touch/angular-touch.js', array( 'angular' ),'1.3.0');
 
-//    wp_enqueue_script('angularjs-crypto', TATDICT_URL . 'lib/angularjs-crypto/public/js/lib/angularjs-crypto.js', array( 'angular' ),'0.0.2');
     wp_enqueue_script('aes', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js', array( 'angular' ),'3.1.2');
     wp_enqueue_script('mode-ecb', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/mode-ecb.js', array( 'angular' ),'3.1.2');
 
@@ -30,14 +29,10 @@ function load_tatdict_javascript() {
 
     wp_localize_script(
         'angular-app',
-        'wp_ajax',
+        'wpAjax',
         array(
-            'ajaxurl'     => admin_url( 'admin-ajax.php' ),
-            'ajaxnonce'   => base64_encode(wp_create_nonce( 'ajax_post_validation' ))
+            'url'     => admin_url( 'admin-ajax.php' ),
+            'nonce'   => base64_encode(wp_create_nonce( 'ajax_post_validation' ))
         )
     );
 }
-
-
-//<script type='text/javascript' src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
-//<script type='text/javascript' src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/mode-ecb.js"></script>
