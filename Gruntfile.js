@@ -90,15 +90,15 @@ module.exports = function (grunt) {
 
 
     grunt.registerTask('build', [
-        'jshint:cmp',
-        'clean:cmp',
+        'jshint:all',
+        'clean:all',
         'concat:js',
         'copy'
     ]);
 
     grunt.registerTask('start', [
-        'jshint:cmp',
-        'clean:cmp',
+        'jshint:all',
+        'clean:all',
         'concat:js',
         'copy',
         'watch:all'
