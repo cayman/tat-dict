@@ -17,19 +17,21 @@ _dictApp.directive('dictWatch', function ($log, $modal, dictService, dictHistory
         scope.highlightOpen = function (id) {
             $log.info('highlightOpen', id);
             if (config.enabled) {
-                var  item = dictService.inArray(scope.history, { id: id });
-                if(item){
-                    dictService.openModal(postId, item.name);
+                //var  item = dictService.inArray(scope.history, { id: id });
+                if(id){
+                    dictService.openModal(postId, id);
                 }
             }
         };
 
         function highlight(item) {
             if (item && item.name) {
-                var tag = '<a name="dic' + item.id + '" class="dict_word" ng-click="highlightOpen(' + item.id + ')">' + item.name + '</a>';
+                var start = '<a name="dic' + item.id + '" class="dict_word" ng-click="highlightOpen(\'';
+                var middle = '\')">';
+                var end = '</a>';
                 var replaced = (item.name.length > 3) ?
-                    elem.html().replace(new RegExp('\\s' + item.name, 'ig'), ' ' + tag) :
-                    elem.html().replace(new RegExp('\\s' + item.name + '\\s', 'ig'), ' ' + tag + ' ');
+                    elem.html().replace(new RegExp('(\\s)(' + item.name + ')', 'ig'), '$1' + start + '$2' + middle + '$2' + end) :
+                    elem.html().replace(new RegExp('(\\s)(' + item.name + ')([,;!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + middle + '$2' + end + '$3');
 
                 elem.html(replaced);
             }
