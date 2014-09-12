@@ -1,0 +1,30 @@
+.dict_word_description {
+  font-weight: 700;
+}
+
+blockquote {
+  border-left: 1px solid $borderColor;
+  font-weight: 500;
+  font-style: normal;
+  padding: 0 1.2em;
+}
+
+abr {
+  font-weight: 700;
+  font-style: italic;
+}
+
+kref {
+  font-weight: 700;
+  text-decoration: underline;
+  color: $mainColor;
+}
+
+dtrn {
+  font-weight: 600;
+  color: $processColor;
+}
+
+i {
+  font-style: italic;
+}

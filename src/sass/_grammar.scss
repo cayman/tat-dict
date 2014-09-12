@@ -1,0 +1,29 @@
+
+table.rule_grammar {
+  border-collapse: collapse;
+  margin-left: 2em;
+  margin-right: 2em;
+  width: 90%;
+
+  th, td {
+    display: table-cell;
+    border: 1px dotted $borderColor;
+    vertical-align: inherit;
+    padding: 0.3em;
+    color: #666;
+  }
+
+  th {
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: 0.0em;
+    line-height: 1.5em;
+    text-transform: none;
+    text-align: center;
+  }
+
+  td {
+    font-weight: 400;
+  }
+
+}

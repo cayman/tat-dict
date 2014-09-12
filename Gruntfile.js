@@ -1,5 +1,7 @@
 module.exports = function (grunt) {
 
+    var pkg = grunt.file.readJSON( 'package.json' );
+
     var taskConfig = {
         pkg: grunt.file.readJSON('package.json'),
         pass: grunt.file.readJSON('.ftppass'),
@@ -34,6 +36,28 @@ module.exports = function (grunt) {
             }
         },
 
+        replace: {
+            dist: {
+                options: {
+                    patterns: [
+                        {
+                            match: /({{(\w*)}})/g,
+                            replacement: function ( match, offset, string, source, target ) {
+                                return pkg[string];
+                            }
+                        }
+                    ]
+                }, files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: ['<%=pkg.src %>/<%=pkg.main %>'],
+                        dest: '<%=pkg.build %>/'
+                    }
+                ]
+            }
+        },
+
         concat: {
             options: {
                 banner: '<%= banner %>\n',
@@ -63,6 +87,19 @@ module.exports = function (grunt) {
             }
         },
 
+        sass: {
+            compile: {
+                files: {
+                    '<%=pkg.build %>/css/dictionary.css': '<%=pkg.src %>/sass/dictionary.scss'
+                },
+                options: {
+                    includePaths: [
+                        '<%=pkg.src %>/sass'
+                    ]
+                }
+            }
+        },
+
         uglify: {
             options: {
                 sourceMap: true
@@ -81,7 +118,7 @@ module.exports = function (grunt) {
             plugin: {
                 expand: true,
                 cwd: '<%=pkg.src %>',
-                src: [ '**/*.css', '**/*.json', '**/*.php'],
+                src: [ '**/*.json', '*/*.php'],
                 dest: '<%=pkg.build %>'
             },
             lib: {
@@ -141,6 +178,8 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'jshint:all',
         'clean:all',
+        'sass',
+        'replace',
         'concat:js',
         'ngAnnotate:js',
         'uglify:js',
@@ -151,6 +190,8 @@ module.exports = function (grunt) {
     grunt.registerTask('start', [
         'jshint:all',
         'clean:all',
+        'sass',
+        'replace',
         'concat:js',
         'ngAnnotate:js',
         'uglify:js',

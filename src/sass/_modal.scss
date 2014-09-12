@@ -1,0 +1,64 @@
+.dict_search_input {
+  width: 180px;
+}
+
+.dict_search_result {
+  font-size: smaller;
+  overflow: auto;
+  max-height: 300px;
+}
+
+.dpfx_process {
+  text-decoration: blink;
+  font-weight: bold;
+  color: $processColor;
+}
+
+.dpfx_process:after {
+  content: "?";
+  text-decoration: blink;
+}
+
+.dpfx_empty {
+}
+
+.dpfx_empty:after {
+  content: "";
+}
+
+.dpfx_success {
+  font-weight: bold;
+  color: $successColor;
+}
+
+.dpfx_success:after {
+  content: "+";
+}
+
+.dpfx_history {
+  font-weight: bold;
+  color: $alertColor;
+}
+
+.dpfx_history:after {
+  content: "~";
+}
+
+.dpfx_like {
+  font-weight: bold;
+  color: $successColor;
+}
+
+.dpfx_like:after {
+  content: "*";
+}
+
+.dpfx_error {
+  font-weight: bold;
+  color: $errorColor;
+}
+
+.dpfx_error:after {
+  content: "-";
+
+}

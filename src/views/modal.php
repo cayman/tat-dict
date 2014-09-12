@@ -25,13 +25,13 @@
 
             </div>
             <div ng-show="!result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
-                <div ng-bind-html="result.item.description" dict-watch="{{ currentPost }}"></div>
+                <div class="dict_word_description" ng-bind-html="result.item.description"></div>
             </div>
             <?php $userId = get_current_user_id(); ?>
             <div ng-show="result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
                 <textarea ng-model="result.item.description"<?php echo ($userId !== 1) ? ' readonly': '' ?>></textarea>
                 <h4>мөнәсәбәтле сүз</h4>
-                <div ng-bind-html="result.item.parent_description" dict-watch="{{ currentPost }}"></div>
+                <div class="dict_word_description" ng-bind-html="result.item.parent_description"></div>
             </div>
         </div>
 <!--        <pre>{{ request | json }}</pre>-->
