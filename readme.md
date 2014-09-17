@@ -5,7 +5,7 @@
 Для подключение необходимо добавить атрибут ng-app="wpApp" 
 для всех страниц добавив его в файл шаблона header.php
     
-    <body ng-app="wpApp" <?php body_class(); ?>>
+    <body ng-app="tatApp" <?php body_class(); ?>>
 
 
 ## Подлючение всплывающего словаря на страницах со статьями
@@ -16,7 +16,7 @@ content.php (отображение статей)
 content-single.php (отображение одной статитьи)
 content-page.php (отображение страницы)
  
-    <div class="entry-content" dict-watch="<?php the_ID(); ?>">
+    <div class="entry-content" tat-post="<?php the_ID(); ?>">
 
 После чего содержимое подключается к работе автословаря
 
