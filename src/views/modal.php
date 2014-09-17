@@ -1,4 +1,5 @@
-<script type="text/ng-template" id="dictModalContent.html">
+<?php $userId = get_current_user_id(); ?>
+<script type="text/ng-template" id="tat_dictionary_modal.html">
     <div class="modal-content">
         <div class="modal-header" ng-swipe-left="close()" ng-swipe-right="close()">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">×</button>
@@ -6,36 +7,35 @@
         </div>
         <div class="modal-body" stop-event="touchend">
             <div>
-                <input id="dict_word" type="text" ng-model="request.name"
-                       class="widefat dict_search_input" ng-mousedown="copyText()"
-                       ng-swipe-left="deleteSymbol('#dict_word')" ng-swipe-right="focus('#dict_word')"
-                       placeholder="Языгыз"/><span ng-class="searchClass">&nbsp;</span><br/>
+                <input type="text" ng-model="request.name"
+                       class="tat-search-input" ng-mousedown="copyText()"
+                       ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
+                       placeholder="Языгыз"/><span ng-class="searchIcon">&nbsp;</span><br/>
 
-                <select ng-if="result.like && result.like.length"  ng-model="result.selected" size="5" style="width: 180px">
-                    <option ng-repeat="like in result.like"	value="{{ like.id }}"
-                            ng-selected="{{like.id === result.item.id}}" ng-bind="like.name"/>
-                </select><span  ng-if="result.like && result.like.length" class="dpfx_like">&nbsp;</span>
-                <br ng-if="result.like && result.like.length"/>
+                <select ng-if="out.like && out.like.length"  ng-model="out.selectedId" size="5" style="width: 180px">
+                    <option ng-repeat="term in out.like"	value="{{ term.id }}"
+                            ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"/>
+                </select><span ng-if="out.like && out.like.length" class="tat-search-icon-like">&nbsp;</span>
+                <br ng-if="out.like && out.like.length"/>
 
-                <select ng-if="history && history.length" ng-model="result.selected" style="width: 180px"
+                <select ng-if="glossary && glossary.length" ng-model="out.selectedId" style="width: 180px"
                         placeholder="Истәлек">
-                    <option ng-repeat="item in history"	value="{{ item.id }}"
-                            ng-selected="{{item.id === result.item.id}}" ng-bind="item.name"/>
-                </select><span ng-if="history && history.length" class="dpfx_history">&nbsp;</span>
+                    <option ng-repeat="term in glossary"	value="{{ term.id }}"
+                            ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"/>
+                </select><span ng-if="glossary && glossary.length" class="tat-search-icon-glossary">&nbsp;</span>
 
             </div>
-            <div ng-show="!result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
-                <div class="dict_word_description" ng-bind-html="result.item.description"></div>
+            <div ng-show="!out.term.parent_name" class="tat-search-result" ng-swipe-left="close()" ng-swipe-right="close()">
+                <div class="tat-search-description" ng-bind-html="out.term.description"></div>
             </div>
-            <?php $userId = get_current_user_id(); ?>
-            <div ng-show="result.item.parent_name" class="dict_search_result" ng-swipe-left="close()" ng-swipe-right="close()">
-                <textarea ng-model="result.item.description"<?php echo ($userId !== 1) ? ' readonly': '' ?>></textarea>
+            <div ng-show="out.term.parent_name" class="tat-search-result" ng-swipe-left="close()" ng-swipe-right="close()">
+                <textarea ng-model="out.term.description"<?php echo ($userId !== 1) ? ' readonly': '' ?>></textarea>
                 <h4>мөнәсәбәтле сүз</h4>
-                <div class="dict_word_description" ng-bind-html="result.item.parent_description"></div>
+                <div class="tat-search-description" ng-bind-html="out.term.parent_description"></div>
             </div>
         </div>
 <!--        <pre>{{ request | json }}</pre>-->
-<!--        <pre>{{ result.item | json }}</pre>-->
+<!--        <pre>{{ out.term | json }}</pre>-->
         <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Ябырга</button>
             <?php if($userId>0){ ?>

@@ -43,11 +43,11 @@ function tatrus_search_callback()
 
     $db = new DBDict();
     $result = new stdClass();
-    $result->item = $db->findByName($name);
-    if (!empty($userId) || ( empty($result->item) && strlen($name)>2 ))
+    $result->term = $db->findByName($name);
+    if (!empty($userId) || ( empty($result->term) && strlen($name)>2 ))
         $result->like = $db->findLike($name);
 
-    if (empty($result->item)) {
+    if (empty($result->term)) {
         if (count($result->like) == 0) {
             header('HTTP/1.0 204 No Content');
         }

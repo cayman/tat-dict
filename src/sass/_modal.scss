@@ -1,64 +1,70 @@
-.dict_search_input {
+.tat-search-input {
   width: 180px;
 }
 
-.dict_search_result {
+.tat-search-result {
   font-size: smaller;
   overflow: auto;
   max-height: 300px;
 }
 
-.dpfx_process {
+.tat-search-description {
+  font-weight: 700;
+}
+
+
+
+.tat-search-icon-process {
   text-decoration: blink;
   font-weight: bold;
   color: $processColor;
 }
 
-.dpfx_process:after {
+.tat-search-icon-process:after {
   content: "?";
   text-decoration: blink;
 }
 
-.dpfx_empty {
+.tat-search-icon-empty {
 }
 
-.dpfx_empty:after {
+.tat-search-icon-empty:after {
   content: "";
 }
 
-.dpfx_success {
+.tat-search-icon-success {
   font-weight: bold;
   color: $successColor;
 }
 
-.dpfx_success:after {
+.tat-search-icon-success:after {
   content: "+";
 }
 
-.dpfx_history {
+.tat-search-icon-glossary {
   font-weight: bold;
   color: $alertColor;
 }
 
-.dpfx_history:after {
+.tat-search-icon-glossary:after {
   content: "~";
 }
 
-.dpfx_like {
+.tat-search-icon-like {
   font-weight: bold;
   color: $successColor;
 }
 
-.dpfx_like:after {
+.tat-search-icon-like:after {
   content: "*";
 }
 
-.dpfx_error {
+.tat-search-icon-error {
   font-weight: bold;
   color: $errorColor;
 }
 
-.dpfx_error:after {
+.tat-search-icon-error:after {
   content: "-";
 
 }
