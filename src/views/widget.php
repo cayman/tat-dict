@@ -13,7 +13,7 @@
         </li>
     </ul>
 
-    <div ng-show="dictConfig.enabled" class="tat-popup-button-block" ng-click="dictOpen()" ng-swipe-left="dictOpen()">
+    <div ng-show="dictConfig.enabled" class="tat-popup-button-block" ng-click="openDictionary()" ng-swipe-left="openDictionary()">
         <div class="tat-popup-button-text" >Cүзлек</div>
     </div>
 
