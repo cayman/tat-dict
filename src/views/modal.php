@@ -12,16 +12,16 @@
                        ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
                        placeholder="Языгыз"/><span ng-class="searchIcon">&nbsp;</span><br/>
 
-                <select ng-if="out.like && out.like.length"  ng-model="out.selectedId" size="5" style="width: 180px">
-                    <option ng-repeat="term in out.like"	value="{{ term.id }}"
+                <select ng-if="out.like && out.like.length"  ng-model="out.selected" size="5" style="width: 180px">
+                    <option ng-repeat="term in out.like"	value="{{ term.name }}"
                             ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"/>
                 </select><span ng-if="out.like && out.like.length" class="tat-search-icon-like">&nbsp;</span>
                 <br ng-if="out.like && out.like.length"/>
 
-                <select ng-if="glossary && glossary.length" ng-model="out.selectedId" style="width: 180px"
+                <select ng-if="glossary" ng-model="out.selected" style="width: 180px"
                         placeholder="Истәлек">
-                    <option ng-repeat="term in glossary"	value="{{ term.id }}"
-                            ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"/>
+                    <option ng-repeat="(name, term) in glossary"	value="{{ name }}"
+                            ng-selected="{{term.id === out.term.id}}" ng-bind="name"/>
                 </select><span ng-if="glossary && glossary.length" class="tat-search-icon-glossary">&nbsp;</span>
 
             </div>

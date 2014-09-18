@@ -1,4 +1,4 @@
-_tatApp.directive('tatPost', function ($log, $modal, tatService, tatGlossary, tatHighlight, $compile) {
+_tatApp.directive('tatPost', function ($log, $modal, tatService, tatGlossary, $compile) {
     $log.debug('tat-post');
 
     return function (scope, elem, attrs) {
@@ -15,23 +15,37 @@ _tatApp.directive('tatPost', function ($log, $modal, tatService, tatGlossary, ta
             }
         });
 
-        scope.search = function (text) {
-            $log.info('open dialog', text);
-            if (config.enabled && text) {
-                tatService.openDictionary(postId, text);
+        scope.open = function (name) {
+            $log.info('open dialog', name);
+            if (config.enabled && name) {
+                tatService.openDictionary(postId, name);
             }
         };
 
 
+        function highlight(name) {
+            $log.debug('highlight:', name);
+
+            var start = '<a id="a' + tatService.hashCode(name) + '" ng-class="glossary[\'' + name + '\'] | highlightClass" ng-click="open(\'' + name + '\')">';
+            var end = '</a>';
+            var replaced = (name.length > 3) ?
+                elem.html().replace(new RegExp('(\\s)(' + name + ')', 'ig'), '$1' + start + '$2' + end) :
+                elem.html().replace(new RegExp('(\\s)(' + name + ')([,;!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + end + '$3');
+
+            elem.html(replaced);
+        }
+
+
         scope.$watch('glossary', function (list, oldList) {
-            if (list.length !== oldList.length) {
-                $log.info('highlight terms', scope.glossary.length);
-                scope.glossary.forEach(function (term) {
-                    tatHighlight.highlight(elem, term, 'search');
-                });
+            if (list !== null) {
+                for (var name in scope.glossary) {
+                    if (scope.glossary.hasOwnProperty(name)) {
+                        highlight(name);
+                    }
+                }
                 $compile(elem.contents())(scope);
             }
-        }, true);
+        },true);
 
     };
 });

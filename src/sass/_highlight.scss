@@ -2,7 +2,11 @@
   background-color: $highlightColor;
   color: inherit;
 }
-.dict-highlight-dirty {
+.tat-highlight-dirty {
   background-color: $highlightColor;
+  color: $errorColor;
+}
+.tat-highlight-process {
+  background-color: $highlightProcessColor;
   color: $processColor;
 }

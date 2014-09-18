@@ -49,6 +49,20 @@ _tatApp.factory('tatService', function ($log, $filter, $modal, $window, $documen
                 return data;
             };
             $modal.open(modalConfig);
+        },
+        hashCode: function (text) {
+            var hash = 0;
+            try {
+                for (var i = 0; i < text.length; i++) {
+                    var char = text.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = (hash & hash); // Convert to 32bit integer
+                }
+                return hash;
+
+            } catch (e) {
+                throw new Error('hashCode: ' + e);
+            }
         }
 
     };

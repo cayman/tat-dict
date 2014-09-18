@@ -59,10 +59,10 @@ function tatrus_search_callback()
 
 }
 
-add_action('wp_ajax_tatrus_get_history', 'tatrus_get_history_callback');
-add_action('wp_ajax_nopriv_tatrus_get_history', 'tatrus_get_history_callback');
+add_action('wp_ajax_tatrus_get_glossary', 'tatrus_get_glossary_callback');
+add_action('wp_ajax_nopriv_tatrus_get_glossary', 'tatrus_get_glossary_callback');
 
-function tatrus_get_history_callback()
+function tatrus_get_glossary_callback()
 {
 
     check_ajax_referer('ajax_post_validation', 'security');
@@ -82,16 +82,21 @@ function tatrus_get_history_callback()
         header('HTTP/1.0 204 No Content');
     }
 
+    $map = array();
+    foreach($result as $term) {
+        $map[$term->name] = $term;
+    }
+
     array_walk($result,'encodeDescription');
-    wp_send_json($result);
+    wp_send_json($map);
 
 }
 
-add_action('wp_ajax_tatrus_save_history', 'tatrus_save_history_callback');
-add_action('wp_ajax_nopriv_tatrus_save_history', 'tatrus_save_history_callback');
+add_action('wp_ajax_tatrus_save_glossary', 'tatrus_save_glossary_callback');
+add_action('wp_ajax_nopriv_tatrus_save_glossary', 'tatrus_save_glossary_callback');
 
 
-function tatrus_save_history_callback()
+function tatrus_save_glossary_callback()
 {
 
     check_ajax_referer('ajax_post_validation', 'security');

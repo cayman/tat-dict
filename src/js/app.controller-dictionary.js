@@ -30,49 +30,50 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         }
     };
 
+
     function search() {
         if ($scope.request.name) {
-            $scope.out.term = tatService.inArray($scope.glossary, { name: $scope.request.name }, true);
+            $scope.out.term = $scope.glossary[$scope.request.name];
 
-            if (!$scope.out.term) {
-                $scope.searchIcon = 'tat-search-icon-process';
-                $log.debug('new search:', $scope.request);
-                $scope.out = tatRest.search($scope.request,
-                    objectsFound,
-                    objectsNotFound);
-            } else {
+            if ($scope.out.term && $scope.out.term.id) {//found in glossary
                 $scope.searchIcon = 'tat-search-icon-glossary';
                 $log.debug('selected:', $scope.out.term.id, $scope.out.term.name);
                 $scope.out.selectedId = $scope.out.term.id;
 
+            } else {     //not found in glossary ,search in rest
+                $scope.searchIcon = 'tat-search-icon-process';
+                $log.debug('new search:', $scope.request);
+                $scope.out = tatRest.search($scope.request,
+                    function objectsFound(value) {
+                        if (!value) {
+                            $log.debug('not found');
+                            $scope.searchIcon = 'tat-search-icon-error';
+
+                        } else if (value.term) {
+                            $log.debug('found term:', $scope.out);
+                            $scope.searchIcon = 'tat-search-icon-success';
+                            if (value.term.like) {
+                                $scope.out.selected = value.term.name;
+                            }
+
+                        } else {
+                            $log.debug('found like:', $scope.out);
+                            $scope.searchIcon = 'tat-search-icon-like';
+                        }
+
+                    }, function objectsNotFound(result) {
+                        $log.debug('not found:', result);
+                        $scope.searchIcon = 'tat-search-icon-error';
+
+                    });
             }
         } else {
+
             $scope.out.term = null;
+
         }
     }
 
-    //Error ajax loaded
-    function objectsNotFound(result) {
-        $scope.searchIcon = 'tat-search-icon-error';
-        $log.debug('not found:', result);
-    }
-
-    //Success ajax loaded
-    function objectsFound(value) {
-        var hasLike = (value.like && value.like.length);
-        if (value.term || hasLike) {
-            $log.debug('found:', $scope.out);
-            $scope.out = value;
-            $scope.searchIcon = $scope.out.term ? 'tat-search-icon-success' : 'tat-search-icon-like';
-
-            if ($scope.out.term && hasLike) {
-                $scope.out.selectedId = $scope.out.term.id;
-            }
-
-        } else {
-            objectsNotFound(value);
-        }
-    }
 
     var searchWord = null;
     //searching
@@ -97,10 +98,9 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 //            }
     }
 
-    $scope.$watch('out.selectedId', function (newId, oldId) {
-        if (newId && newId !== oldId) {
-            $scope.out.term = tatService.inArray($scope.out.like, { id: newId }) ||
-                tatService.inArray($scope.glossary, { id: newId });
+    $scope.$watch('out.selected', function (name, oldName) {
+        if (name && name !== oldName) {
+            $scope.out.term = tatService.inArray($scope.out.like, { name: name }) || $scope.glossary[name];
 
 //            if($scope.out.term) {
 //                if (!$scope.out.term._description && $scope.out.term.description ) {
@@ -121,7 +121,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
     $scope.save = function () {
         if ($scope.glossary && $scope.selectedText) {
-            tatGlossary.add(postId, $scope.selectedText, $scope.out.term);
+            $scope.glossary[$scope.selectedText] = tatGlossary.save(postId, $scope.selectedText, $scope.out.term);
         }
         $modalInstance.close($scope.selectedText);
     };

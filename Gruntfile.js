@@ -67,8 +67,8 @@ module.exports = function (grunt) {
             js: {
                 files: [
                     {
-                        src: '<%=pkg.src %>/js/*.js',
-                        dest: '<%=pkg.build %>/js/<%=jsApp %>.js'
+                        src: '<%=pkg.src %>/<%=pkg.app %>.*.js',
+                        dest: '<%=pkg.build %>/<%=pkg.app %>.js'
                     }
                 ]
             }
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        src: '<%=pkg.build %>/js/<%=jsApp %>.js',
+                        src: '<%=pkg.build %>/<%=pkg.app %>.js',
                         ext: '.annotated.js',
                         extDot: 'last'       // Extensions in filenames begin after the last dot
                     }
@@ -107,8 +107,8 @@ module.exports = function (grunt) {
             js: {
                 files: [
                     {
-                        src: '<%=pkg.build %>/js/<%=jsApp %>.annotated.js',
-                        dest: '<%=pkg.build %>/js/<%=jsApp %>.min.js'
+                        src: '<%=pkg.build %>/<%=pkg.app %>.annotated.js',
+                        dest: '<%=pkg.build %>/<%=pkg.app %>.min.js'
                     }
                 ]
             }
@@ -156,7 +156,7 @@ module.exports = function (grunt) {
                 },
                 src: 'build',
                 dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
-                exclusions: ['temp', 'lib', '**/*.js', '!**/*.min.js']
+                exclusions: ['temp', 'lib',  '**/*.map', '**/*.js', '!**/<%=pkg.js %>']
             },
             full: {
                 auth: {
@@ -166,7 +166,7 @@ module.exports = function (grunt) {
                 },
                 src: 'build',
                 dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
-                exclusions: ['temp', '**/*.js', '!**/*.min.js']
+                exclusions: ['temp', '**/*.map', '**/*.js', '!**/<%=pkg.js %>']
             }
         }
 

@@ -1,4 +1,4 @@
-_tatApp.controller('SidebarCtrl', function ($log, $scope, tatService, tatGlossary, tatHighlight, $location, $anchorScroll) {
+_tatApp.controller('SidebarCtrl', function ($log, $scope, tatService, tatGlossary, $location, $anchorScroll) {
     $log.log('SidebarCtrl:' + $scope.postId);
 
     $scope.dictConfig = tatService.getConfig();
@@ -9,8 +9,8 @@ _tatApp.controller('SidebarCtrl', function ($log, $scope, tatService, tatGlossar
         $scope.glossary = tatGlossary.get(postId);
     });
 
-    $scope.goToHighlight = function (term) {
-        $location.hash(tatHighlight.getTagId(term));
+    $scope.goToHighlight = function (name) {
+        $location.hash('a'+tatService.hashCode(name));
         $anchorScroll();
     };
 
