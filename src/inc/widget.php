@@ -6,13 +6,13 @@
  * Time: 16:03
  */
 
-class tatdict_widget extends WP_Widget {
+class tat_widget extends WP_Widget {
 
     function __construct() {
         parent::__construct(
-            'tatdict_widget',
-            __('Tatar Dictionary Widget','tatdict_widget_domain'),
-            array('description' => __('Виджет татарско-русского словаря','tatdict_widget_domain'),
+            'tat_widget',
+            __('Tatar Dictionary Widget','tat_widget_domain'),
+            array('description' => __('Виджет татарско-русского словаря','tat_widget_domain'),
             )
         );
     }
@@ -36,7 +36,7 @@ class tatdict_widget extends WP_Widget {
         if ( isset( $instance[ 'title' ] ) ) {
             $title = $instance[ 'title' ];
         } else {
-            $title = __( 'Cүзлек', 'tatdict_widget_domain' );
+            $title = __( 'Cүзлек', 'tat_widget_domain' );
         }
         ?>
         <p>
@@ -55,8 +55,8 @@ class tatdict_widget extends WP_Widget {
     }
 }
 
-add_action( 'widgets_init', 'tatdict_load_widget' );
+add_action( 'widgets_init', 'tat_load_widget' );
 
-function tatdict_load_widget() {
-    register_widget( 'tatdict_widget' );
+function tat_load_widget() {
+    register_widget('tat_widget');
 }

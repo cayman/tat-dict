@@ -1,11 +1,17 @@
-_tatApp.filter('highlightClass',function(){
-    return function(term) {
-        return {
-            'tat-highlight-process': term.$resolved === false,
-            'tat-highlight-dirty': term.$resolved === true && !term.id,
-            'tat-highlight': !term.$resolved || term.$resolved === true && term.id
+_tatApp.filter('notEmpty', function () {
+        return function (obj) {
+            if(angular.isObject(obj)) {
+                for (var field in obj) {
+                    if (obj.hasOwnProperty(field)) {
+                        return true;
+                    }
+                }
+                return false;
+            }else if (angular.isArray(obj)){
+                return obj.length>0;
+            }else {
+                return !!obj;
+            }
+
         };
-    }
-});
-
-
+    });

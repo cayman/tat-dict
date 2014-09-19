@@ -2,11 +2,28 @@
   background-color: $highlightColor;
   color: inherit;
 }
+
 .tat-highlight-dirty {
-  background-color: $highlightColor;
   color: $errorColor;
 }
+
 .tat-highlight-process {
-  background-color: $highlightProcessColor;
-  color: $processColor;
+  -webkit-animation: process 3s; /* Chrome, Safari, Opera */
+  animation: process 3s;
+}
+
+.tat-highlight-over {
+  background-color: $selectedColor;
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes process {
+  from {background: $highlightColor;}
+  to {background: $mainColor;}
+}
+
+/* Standard syntax */
+@keyframes process {
+  from {background: $highlightColor;}
+  to {background: $mainColor;}
 }

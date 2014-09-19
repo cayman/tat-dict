@@ -1,30 +1,11 @@
-_tatApp.factory('tatRest', function ($log, $resource) {
+_tatApp.factory('tatRest', function ($log, $resource, tatApp) {
     $log.debug('tatRest');
-    var ajaxUrl = './example.json';
-    var ajaxNonce = null;
 
-    if (angular.isObject(wpAjax)) {
-        ajaxUrl = wpAjax.url;
-        ajaxNonce = atob(wpAjax.nonce);
-    }
-
-    function decodeResponse(response, header) {
-        if(response  &&  response.length>0 ){
-            var first = response.trim().substr(0,1);
-            if(first==='{') {
-                return angular.fromJson(response);
-            }else {
-                $log.debug(response);
-            }
-        }
-        return null;
-    }
-
-    return $resource(ajaxUrl, {}, {
-        search: {params: {security: ajaxNonce, action: 'tatrus_search'}, cache: true,  transformResponse:  decodeResponse},
-        getGlossary: {params: {security: ajaxNonce, action: 'tatrus_get_glossary'},  transformResponse:  decodeResponse },
-        addToGlossary: {params: {security: ajaxNonce, action: 'tatrus_save_glossary'} ,  transformResponse:  decodeResponse}
+    return $resource(tatApp.getUrl(), {}, {
+        search: {params: {security: tatApp.getNonce(), action: 'tat_search', cache: true}},
+        getGlossary: {params: {security: tatApp.getNonce(), action: 'tat_get_glossary'}},
+        addToGlossary: {params: {security: tatApp.getNonce(), action: 'tat_save_glossary'}},
+        deleteFromGlossary: {params: {security: tatApp.getNonce(), action: 'tat_delete_glossary'}}
     });
 
 });
-

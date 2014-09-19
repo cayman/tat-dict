@@ -118,7 +118,7 @@ module.exports = function (grunt) {
             plugin: {
                 expand: true,
                 cwd: '<%=pkg.src %>',
-                src: [ '**/*.json', '*/*.php'],
+                src: [ '**/*.json', '*/*.php', '*/*.png', '*/*.gif'],
                 dest: '<%=pkg.build %>'
             },
             lib: {

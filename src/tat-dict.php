@@ -17,9 +17,9 @@ require_once TATDICT_DIR .'inc/db.php';
 require_once TATDICT_DIR .'inc/ajax.php';
 require_once TATDICT_DIR .'inc/widget.php';
 
-add_action('wp_enqueue_scripts', 'load_tatdict_javascript');
+add_action('wp_enqueue_scripts', 'load_tat_javascript');
 
-function load_tatdict_javascript() {
+function load_tat_javascript() {
 
     wp_enqueue_style('bootstrap', TATDICT_URL . 'lib/bootstrap/dist/css/bootstrap.css',array(),'3.1.1');
     wp_enqueue_style('dictionary', TATDICT_URL . 'css/dictionary.css', array('style','bootstrap'),'{{version}}');
@@ -45,6 +45,7 @@ function load_tatdict_javascript() {
         'wpAjax',
         array(
             'url'     => admin_url( 'admin-ajax.php' ),
+            'img'     => TATDICT_URL.'img/',
             'nonce'   => base64_encode(wp_create_nonce( 'ajax_post_validation' ))
         )
     );

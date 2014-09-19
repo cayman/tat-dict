@@ -25,10 +25,10 @@ function encodeDescription(&$row,$key){
     //    $int_id = absint( $row->ID );
 }
 
-add_action('wp_ajax_tatrus_search', 'tatrus_search_callback');
-add_action('wp_ajax_nopriv_tatrus_search', 'tatrus_search_callback');
+add_action('wp_ajax_tat_search', 'tat_search_callback');
+add_action('wp_ajax_nopriv_tat_search', 'tat_search_callback');
 
-function tatrus_search_callback()
+function tat_search_callback()
 {
 
     check_ajax_referer('ajax_post_validation', 'security');
@@ -41,15 +41,16 @@ function tatrus_search_callback()
         wp_send_json_error("empty name param");
     }
 
-    $db = new DBDict();
+    $db = new TatDict();
     $result = new stdClass();
     $result->term = $db->findByName($name);
     if (!empty($userId) || ( empty($result->term) && strlen($name)>2 ))
         $result->like = $db->findLike($name);
 
     if (empty($result->term)) {
-        if (count($result->like) == 0) {
-            header('HTTP/1.0 204 No Content');
+        if (empty($result->like)) {
+            header('HTTP/1.0 404 Not Found');
+            wp_send_json_error($name." not found");
         }
         else
             header('HTTP/1.0 206 Partial Content');
@@ -59,10 +60,10 @@ function tatrus_search_callback()
 
 }
 
-add_action('wp_ajax_tatrus_get_glossary', 'tatrus_get_glossary_callback');
-add_action('wp_ajax_nopriv_tatrus_get_glossary', 'tatrus_get_glossary_callback');
+add_action('wp_ajax_tat_get_glossary', 'tat_get_glossary_callback');
+add_action('wp_ajax_nopriv_tat_get_glossary', 'tat_get_glossary_callback');
 
-function tatrus_get_glossary_callback()
+function tat_get_glossary_callback()
 {
 
     check_ajax_referer('ajax_post_validation', 'security');
@@ -75,28 +76,27 @@ function tatrus_get_glossary_callback()
         wp_send_json_error("empty post param");
     }
 
-    $db = new DBDict();
+    $db = new TatDict();
     $result = $db->findByPost($post, empty($userId) ? 1 : $userId);
 
-    if (count($result) == 0) {
-        header('HTTP/1.0 204 No Content');
+    if(count($result)==0) {
+        header('HTTP/1.0 404 Not Found');
+        wp_send_json_error("glossary not exist");
     }
 
     $map = array();
-    foreach($result as $term) {
+    foreach ($result as $term) {
         $map[$term->name] = $term;
     }
-
-    array_walk($result,'encodeDescription');
     wp_send_json($map);
 
 }
 
-add_action('wp_ajax_tatrus_save_glossary', 'tatrus_save_glossary_callback');
-add_action('wp_ajax_nopriv_tatrus_save_glossary', 'tatrus_save_glossary_callback');
+add_action('wp_ajax_tat_save_glossary', 'tat_save_glossary_callback');
+add_action('wp_ajax_nopriv_tat_save_glossary', 'tat_save_glossary_callback');
 
 
-function tatrus_save_glossary_callback()
+function tat_save_glossary_callback()
 {
 
     check_ajax_referer('ajax_post_validation', 'security');
@@ -125,7 +125,7 @@ function tatrus_save_glossary_callback()
         wp_send_json_error("error name value");
     }
 
-    $db = new DBDict();
+    $db = new TatDict();
     $result = null;
 
     if (isset($id)) { //В параметре задан id, только для существующих объектов
@@ -215,7 +215,6 @@ function tatrus_save_glossary_callback()
 
     }
 
-
     //Добавляем связь со статьей
     if ($db->getPost($result->id, $post, $userId) == null && !$db->addPost($result->id, $post, $userId)) {
         header('HTTP/1.0 409 Conflict');
@@ -223,5 +222,65 @@ function tatrus_save_glossary_callback()
     }
 
     wp_send_json($result);
+
+}
+
+
+add_action('wp_ajax_tat_delete_glossary', 'tat_delete_glossary_callback');
+add_action('wp_ajax_nopriv_tat_delete_glossary', 'tat_delete_glossary_callback');
+
+
+function tat_delete_glossary_callback()
+{
+
+    check_ajax_referer('ajax_post_validation', 'security');
+
+    $userId = get_current_user_id();
+
+    if (empty($userId)) {
+        header('HTTP/1.0 401 Unauthorized');
+        wp_send_json_error("save not allowed");
+    }
+
+    $post = _rp('post');
+    $id = _rp('id');
+    $name = _rp('name');
+
+    if (empty($post)) {
+        header('HTTP/1.0 400 Bad Request');
+        wp_send_json_error("error post value");
+    }
+
+    if (empty($name)) {
+        header('HTTP/1.0 400 Bad Request');
+        wp_send_json_error("error name value");
+    }
+
+    if (empty($id)) {
+        header('HTTP/1.0 400 Bad Request');
+        wp_send_json_error("error id value");
+    }
+
+    $db = new TatDict();
+    $result = null;
+
+    $result = $db->get($id);
+
+    if (empty($result)) {
+        header('HTTP/1.0 400 Bad Request');
+        wp_send_json_error("error id value, object not exist");
+    }
+
+    if ($result->name != $name) {
+        header('HTTP/1.0 409 Conflict');
+        wp_send_json_error("error name value, identifier does not match the name");
+    }
+
+    if($db->deletePost($id, $post, $userId)>0)
+        wp_send_json_success("deleted");
+    else{
+        header('HTTP/1.0 404 Not Found');
+        wp_send_json_error("error, object not exist");
+    }
 
 }

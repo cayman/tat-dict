@@ -1,45 +1,29 @@
-_tatApp.factory('tatGlossary', function ($log, tatRest) {
+_tatApp.factory('tatGlossary', function ($log, tatRest,tatApp) {
     $log.debug('tatGlossary');
     var glossaries = {};
 
     function load(postId) {
         return tatRest.getGlossary({post: postId}, function success(data) {
-            $log.debug('loaded Glossary for post', postId, ',terms count', data.length);
+            $log.debug('loaded Glossary for post', postId, ',terms count', tatApp.size(data));
         }, function (result) {
             $log.debug('error load Glossary for post ', postId, result);
         });
     }
 
-//    function append(postId, entity) {
-//        var glossary = glossaries[postId];
-//        if (glossary) {
-//            var found = false;
-//            for (var index = 0; index < glossary.length; index++) {
-//                if (glossary[index].name === entity.name) {
-//                    glossary[index] = entity;
-//                    found = true;
-//                }
-//            }
-//            if (!found) {
-//                glossary.push(entity);
-//            }
-//
-//        } else {
-//            glossaries[postId] = [ entity ];
-//        }
-//    }
-
-
     return {
-        get: function (postId, successCallback) {
+        get: function (postId) {
             if (postId) {
-                return glossaries[postId] ? glossaries[postId] : (glossaries[postId] = load(postId, successCallback));
+                return glossaries[postId] ? glossaries[postId] : (glossaries[postId] = load(postId));
             } else {
                 return null;
             }
         },
 
         save: function (postId, text, term) {
+
+            if (!postId || !term) {
+                return;
+            }
             // text is main identify
             var params = {post: postId, name: text };
 
@@ -64,13 +48,36 @@ _tatApp.factory('tatGlossary', function ($log, tatRest) {
             }
 
             $log.debug('addToGlossary', params);
-            return tatRest.addToGlossary(params, function success(data) {
+
+            glossaries[postId][text] = tatRest.addToGlossary(params, function success(data) {
                 $log.info('success');
             }, function error(result) {
                 $log.info('error', result);
                 //append(postId,result);//store in cache
             });
 
+
+        },
+
+        delete: function (postId, term) {
+            if (!postId || !term) {
+                return;
+            }
+
+            if (term === glossaries[postId][term.name]) {
+
+                var params = {post: postId, name: term.name, id: term.id };
+
+                tatRest.deleteFromGlossary(params, function success(data) {
+                    delete glossaries[postId][term.name];
+                    $log.info('success deleted',tatApp.size(glossaries[postId]));
+
+                }, function error(result) {
+                    $log.info('error', result);
+                    //append(postId,result);//store in cache
+                });
+
+            }
         }
     };
 

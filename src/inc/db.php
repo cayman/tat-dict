@@ -6,7 +6,7 @@
  * Date: 25.08.2014
  * Time: 16:03
  */
-class DBDict
+class TatDict
 {
     private $db, $dict, $post;
 
@@ -88,6 +88,7 @@ class DBDict
             $parentId > 0 ? array('%s', '%d', '%d') : array('%s', null, '%d'), array('%d'));
 
     }
+
 
     //dictpost
     public function getPost($id, $postId, $userId)
