@@ -6,9 +6,11 @@ _tatApp.directive('highlight', function ($log, tatApp) {
             element.addClass('tat-highlight');
 
             scope.$watch('glossary["'+attrs.name+'"]', function (value) {
-                element.toggleClass('tat-highlight-process',value && value.$resolved === false);
-                element.toggleClass('tat-highlight-dirty',value && !value.id);
-
+                if(value) {
+                   // $log.debug('changed',attrs.name);
+                    element.toggleClass('tat-highlight-process', value.$resolved === false);
+                    element.toggleClass('tat-highlight-dirty', !value.id);
+                }
             },true);
 
             element.on('click', function () {

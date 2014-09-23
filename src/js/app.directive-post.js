@@ -4,6 +4,7 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
     return function (scope, elem, attrs) {
         var postId = attrs.tatPost;
         var config = tatApp.getConfig();
+        var post = elem.html();
         scope.glossary = tatGlossary.get(postId);
 
         elem.on('mouseup', function () {
@@ -23,25 +24,25 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
         };
 
 
-        function highlight(name) {
+        function highlight(post, name) {
             var start = '<highlight name="' + name + '">';
             var end = '</highlight>';
-            var replaced = (name.length > 3) ?
-                elem.html().replace(new RegExp('(\\s)(' + name + ')', 'ig'), '$1' + start + '$2' + end) :
-                elem.html().replace(new RegExp('(\\s)(' + name + ')([,;!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + end + '$3');
+            return (name.length > 3) ?
+                post.replace(new RegExp('([\\s«])(' + name + ')', 'ig'), '$1' + start + '$2' + end) :
+                post.replace(new RegExp('([\\s«])(' + name + ')([-,;:!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + end + '$3');
 
-            elem.html(replaced);
         }
-
 
         scope.$watch('glossary', function (list, oldList) {
             $log.info('highlight items', tatApp.size(list));
             if (list !== null) {
+                var _post = post;
                 for (var name in scope.glossary) {
                     if (scope.glossary.hasOwnProperty(name) && name.charAt(0)!=='$' && scope.glossary[name].name) {
-                        highlight(name);
+                        _post = highlight(_post, name);
                     }
                 }
+                elem.html(_post);
                 $compile(elem.contents())(scope);
             }
         }, true);
