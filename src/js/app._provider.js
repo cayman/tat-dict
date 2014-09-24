@@ -26,6 +26,7 @@ _tatApp.provider('tatApp', function () {
 
     this.$get = function ($log, $filter, $modal, $window, $document, $sniffer) {
         var msie = $sniffer.msie;
+        var history = [];
         return {
             getConfig: function () {
                 return dictionaryConfig;
@@ -83,6 +84,9 @@ _tatApp.provider('tatApp', function () {
             },
             getImage: function (name) {
                 return img + name;
+            },
+            getHistory: function(){
+                return  history;
             },
             size: function (map){
                 var i = 0;

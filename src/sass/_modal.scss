@@ -9,62 +9,6 @@
 }
 
 .tat-search-description {
-  font-weight: 700;
+  font-weight: 500;
 }
 
-
-
-.tat-search-icon-process {
-  text-decoration: blink;
-  font-weight: bold;
-  color: $processColor;
-}
-
-.tat-search-icon-process:after {
-  content: "?";
-  text-decoration: blink;
-}
-
-.tat-search-icon-empty {
-}
-
-.tat-search-icon-empty:after {
-  content: "";
-}
-
-.tat-search-icon-success {
-  font-weight: bold;
-  color: $successColor;
-}
-
-.tat-search-icon-success:after {
-  content: "+";
-}
-
-.tat-search-icon-glossary {
-  font-weight: bold;
-  color: $alertColor;
-}
-
-.tat-search-icon-glossary:after {
-  content: "~";
-}
-
-.tat-search-icon-like {
-  font-weight: bold;
-  color: $successColor;
-}
-
-.tat-search-icon-like:after {
-  content: "*";
-}
-
-.tat-search-icon-error {
-  font-weight: bold;
-  color: $errorColor;
-}
-
-.tat-search-icon-error:after {
-  content: "-";
-
-}

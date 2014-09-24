@@ -38,7 +38,7 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
             if (list !== null) {
                 var _post = post;
                 for (var name in scope.glossary) {
-                    if (scope.glossary.hasOwnProperty(name) && name.charAt(0)!=='$' && scope.glossary[name].name) {
+                    if (scope.glossary.hasOwnProperty(name) && name.charAt(0)!=='$') {
                         _post = highlight(_post, name);
                     }
                 }

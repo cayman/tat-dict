@@ -7,7 +7,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     $scope.request = {};
     $scope.out = {};
     $scope.glossary = tatGlossary.get(postId);
-    $scope.history = [];
+    $scope.history = tatApp.getHistory();
 
 
     $scope.deleteSymbol = function () {
@@ -17,8 +17,14 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     };
 
     $scope.restore = function () {
-        if ($scope.request.name && $scope.request.name.length > 2) {
-            $scope.request.name = $scope.request.name.slice(0, -1);
+        var name = $scope.request.name;
+        if($scope.history.length>0){
+            $scope.request.name = $scope.history.pop();
+            if($scope.request.name === name){
+                $scope.request.name = $scope.history.pop();
+            }
+        }else{
+            $scope.request.name = null;
         }
     };
 
@@ -33,8 +39,12 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         }
     };
 
+    $scope.goto = function (name) {
+        $scope.request.name = name;
+    };
 
-    function search() {
+
+    $scope.search = function() {
         if ($scope.glossary && ($scope.out.term = $scope.glossary[$scope.request.name])) {
             //found in glossary
             $log.debug('selected:', $scope.out.term.name);
@@ -66,7 +76,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         }
         $scope.history.push($scope.request.name);
 
-    }
+    };
 
     $scope.hasGlossary = function(){
         return tatApp.size($scope.glossary)>0;
@@ -84,7 +94,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
             searchWord = text;
             $timeout(function () {
                 if (searchWord === $scope.request.name) {
-                    search();
+                    $scope.search();
                 }
             }, 900);
         }
@@ -134,7 +144,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
     if (data.text) {
         $scope.request.name = $scope.text = data.text;
-        search();
+        $scope.search();
     }
 
 });

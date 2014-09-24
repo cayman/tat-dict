@@ -8,11 +8,12 @@
         <div class="modal-body" stop-event="touchend">
 
             <div>
-                <img ng-if="icon" ng-src="{{ images }}previous.png"/>
+                <img ng-if="icon" ng-src="{{ images }}previous.png" ng-click="restore()"/>
                 <input type="text" ng-model="request.name"
                        class="tat-search-input" ng-mousedown="copyText()"
                        ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
-                       placeholder="Языгыз"/> <img ng-if="icon" ng-src="{{ images }}{{ icon }}"/>
+                       placeholder="Языгыз"/>
+                <img ng-if="icon" ng-src="{{ images }}{{ icon }}" ng-click="search()"/>
             </div>
 
             <div ng-if="out.like && out.like.length>0">
@@ -34,13 +35,13 @@
 
             <div ng-show="!out.term.parent_name" class="tat-search-result" ng-swipe-left="close()"
                  ng-swipe-right="close()">
-                <p class="tat-search-description" ng-bind-html="out.term.description"></p>
+                <p class="tat-search-description" ng-bind-html="out.term.description | tatDescription"></p>
             </div>
 
             <div ng-show="out.term.parent_name" class="tat-search-result" ng-swipe-left="close()" ng-swipe-right="close()">
                 <textarea ng-model="out.term.description"<?php echo ($userId !== 1) ? ' readonly' : '' ?>></textarea>
                 <h4>мөнәсәбәтле сүз</h4>
-                <p class="tat-search-description" ng-bind-html="out.term.parent_description"></p>
+                <p class="tat-search-description" ng-bind-html="out.term.parent_description | tatDescription"></p>
             </div>
 
         </div>

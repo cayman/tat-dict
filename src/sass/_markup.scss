@@ -5,22 +5,32 @@ blockquote {
   padding: 0 1.2em;
 }
 
-abr {
+.term-name {
   font-weight: 700;
+}
+
+.term-description {
+  font-weight: 500;
+}
+
+.term-abbr {
+}
+
+.term-italic {
   font-style: italic;
 }
 
-kref {
-  font-weight: 700;
-  text-decoration: underline;
-  color: $mainColor;
+.term-example {
+  color: #536774;
+  font-size: 90%;
 }
 
-dtrn {
-  font-weight: 600;
-  color: $processColor;
+
+.term-co {
+  color: $selectedColor;
 }
 
-i {
-  font-style: italic;
+.term-c {
+  font-weight: 500;
+  background-color: $highlightColor;
 }

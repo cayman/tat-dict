@@ -3,3 +3,14 @@
   max-height: 200px;
   list-style: square;
 }
+
+.tat-sidebar-term-dirty {
+  a {
+    color: $alertColor;
+    text-decoration: none;
+  }
+  a:hover, a:focus {
+    text-decoration: underline;
+  }
+
+}

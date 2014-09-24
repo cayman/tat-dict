@@ -4,26 +4,38 @@
 }
 
 .tat-highlight-dirty {
-  color: $errorColor;
+  background-color: $highlightColor;
+  color: $alertColor;
 }
 
 .tat-highlight-process {
-  -webkit-animation: process 3s; /* Chrome, Safari, Opera */
-  animation: process 3s;
+  cursor: progress;
+  -webkit-animation: process 2s infinite; /* Chrome, Safari, Opera */
+  -moz-keyframes: process 2s infinite; /* Firefox */
+  animation: process 2s infinite;
 }
 
 .tat-highlight-over {
   background-color: $selectedColor;
+  cursor: pointer;
+  color: $fonColor;
 }
 
 /* Chrome, Safari, Opera */
 @-webkit-keyframes process {
-  from {background: $highlightColor;}
-  to {background: $mainColor;}
+  0%   {background: $highlightColor; }
+  50%  {background: $fonColor; color: inherit; }
+  100% {background: $highlightColor; }
 }
-
+/* Firefox */
+@-moz-keyframes process {
+  0%   {background: $highlightColor; }
+  50%  {background: $fonColor; color: inherit; }
+  100% {background: $highlightColor; }
+}
 /* Standard syntax */
 @keyframes process {
-  from {background: $highlightColor;}
-  to {background: $mainColor;}
+  0%   {background: $highlightColor; }
+  50%  {background: $fonColor; color: inherit; }
+  100% {background: $highlightColor; }
 }
