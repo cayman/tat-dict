@@ -21,7 +21,7 @@ _tatApp.factory('tatGlossary', function ($log, tatRest,tatApp) {
 
         save: function (postId, text, term) {
 
-            if (!postId || !term) {
+            if (!postId || !text) {
                 return;
             }
             // text is main identify
