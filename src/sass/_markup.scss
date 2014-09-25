@@ -11,6 +11,7 @@ blockquote {
 
 .term-description {
   font-weight: 500;
+  color: $descriptionColor;
 }
 
 .term-abbr {
@@ -21,16 +22,17 @@ blockquote {
 }
 
 .term-example {
-  color: #536774;
-  font-size: 90%;
+  color: $exampleColor;
+  font-size: 85%;
+  font-weight: 700;
 }
 
 
-.term-co {
-  color: $selectedColor;
+.term-comment {
+  color: $commentColor;
 }
 
-.term-c {
+.term-color {
   font-weight: 500;
-  background-color: $highlightColor;
+  background-color: $colorColor;
 }

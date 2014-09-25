@@ -2,13 +2,16 @@
   width: 180px;
 }
 
-.tat-search-result {
-  font-size: smaller;
+.tat-search-linked {
+  font-weight: 700;
   overflow: auto;
-  max-height: 300px;
+  color: $mainColor;
 }
 
 .tat-search-description {
   font-weight: 500;
+  font-size: 95%;
+  overflow: auto;
+  max-height: 300px;
 }
 

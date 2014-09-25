@@ -1,7 +1,7 @@
 _tatApp.config(function(tatAppProvider){
     console.log('tatApp.config');
 
-    tatAppProvider.setAjax(wpAjax);
+    tatAppProvider.setParams(appParams);
 
     tatAppProvider.setDictionaryConfig({
         enabled: true,

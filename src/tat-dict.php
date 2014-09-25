@@ -42,10 +42,10 @@ function load_tat_javascript() {
 
     wp_localize_script(
         'angular-app',
-        'wpAjax',
+        'appParams',
         array(
-            'url'     => admin_url( 'admin-ajax.php' ),
-            'img'     => TATDICT_URL.'img/',
+            'ajax'     => admin_url( 'admin-ajax.php' ),
+            'url'     => TATDICT_URL,
             'nonce'   => base64_encode(wp_create_nonce( 'ajax_post_validation' ))
         )
     );

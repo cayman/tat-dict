@@ -1,11 +1,12 @@
 _tatApp.factory('tatRest', function ($log, $resource, tatApp) {
     $log.debug('tatRest');
 
-    return $resource(tatApp.getUrl(), {}, {
-        search: {params: {security: tatApp.getNonce(), action: 'tat_search', cache: true}},
-        getGlossary: {params: {security: tatApp.getNonce(), action: 'tat_get_glossary'}},
-        addToGlossary: {params: {security: tatApp.getNonce(), timeout:3600000,  action: 'tat_save_glossary'}},
-        deleteFromGlossary: {params: {security: tatApp.getNonce(), action: 'tat_delete_glossary'}}
+    return $resource(tatApp.getAjaxUrl(), {security: tatApp.getNonce() }, {
+        search: {params: {action: 'tat_search'}},
+        getGlossary: {params: {action: 'tat_get_glossary'}},
+        addToGlossary: {params: {action: 'tat_save_glossary'}, timeout: 3600000 },
+        deleteFromGlossary: {params: {action: 'tat_delete_glossary'}},
+        getAbbreviations: { url: tatApp.getPlugUrl('js/abbr.json'), isArray: true, cache: true}
     });
 
 });

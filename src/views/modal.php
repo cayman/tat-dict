@@ -9,7 +9,7 @@
 
             <div>
                 <img ng-if="icon" ng-src="{{ images }}previous.png" ng-click="restore()"/>
-                <input type="text" ng-model="request.name"
+                <input type="text" name="word" ng-model="request.name"
                        class="tat-search-input" ng-mousedown="copyText()"
                        ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
                        placeholder="Языгыз"/>
@@ -33,16 +33,14 @@
                 </select>
             </div>
 
-            <div ng-show="!out.term.parent_name" class="tat-search-result" ng-swipe-left="close()"
-                 ng-swipe-right="close()">
-                <p class="tat-search-description" ng-bind-html="out.term.description | tatDescription"></p>
-            </div>
+            <div ng-if="!out.term.parent_name" class="tat-search-description"
+                 tat-description="out.term.description" ng-swipe-right="close()"></div>
 
-            <div ng-show="out.term.parent_name" class="tat-search-result" ng-swipe-left="close()" ng-swipe-right="close()">
-                <textarea ng-model="out.term.description"<?php echo ($userId !== 1) ? ' readonly' : '' ?>></textarea>
-                <h4>мөнәсәбәтле сүз</h4>
-                <p class="tat-search-description" ng-bind-html="out.term.parent_description | tatDescription"></p>
-            </div>
+            <textarea ng-if="out.term.parent_name"
+                      ng-model="out.term.description"<?php echo ($userId !== 1) ? ' readonly' : '' ?>></textarea>
+            <h5 class="tat-search-linked" ng-if="out.term.parent_name">мөнәсәбәтле сүз</h5>
+            <div ng-if="out.term.parent_name" class="tat-search-description"
+                 tat-description="out.term.parent_description" ng-swipe-right="close()"></div>
 
         </div>
 <!--        <pre>{{ request | json }}</pre>-->

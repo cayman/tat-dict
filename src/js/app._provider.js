@@ -13,13 +13,13 @@ _tatApp.provider('tatApp', function () {
 
     var ajaxUrl = './example.json';
     var ajaxNonce = null;
-    var img = '';
+    var plugUrl = '';
 
-    this.setAjax = function (ajax) {
-        if (angular.isObject(ajax)) {
-            ajaxUrl = ajax.url;
-            img = ajax.img;
-            ajaxNonce = atob(ajax.nonce);
+    this.setParams = function (params) {
+        if (angular.isObject(params)) {
+            ajaxUrl = params.ajax;
+            ajaxNonce = atob(params.nonce);
+            plugUrl = params.url;
         }
     };
 
@@ -31,8 +31,11 @@ _tatApp.provider('tatApp', function () {
             getConfig: function () {
                 return dictionaryConfig;
             },
-            getUrl: function () {
+            getAjaxUrl: function () {
                 return ajaxUrl;
+            },
+            getPlugUrl: function (name) {
+                return plugUrl+name;
             },
             getNonce: function () {
                 return ajaxNonce;
@@ -54,8 +57,8 @@ _tatApp.provider('tatApp', function () {
                 return (selectedText && selectedText.trim().length > 1) ? selectedText.trim() : null;
             },
 
-            inArray: function (arr, criteria, comparator) {
-                return (arr && arr.length > 0) ? ( $filter('filter')(arr, criteria, comparator)[0] || null) : null;
+            inArray: function (arr, key, comparator) {
+                return (arr && arr.length > 0) ? ( $filter('filter')(arr, {name:key}, comparator)[0] || null) : null;
             },
             openDictionary: function (postId, text) {
                 var data = {
@@ -81,9 +84,6 @@ _tatApp.provider('tatApp', function () {
                 } catch (e) {
                     throw new Error('hashCode: ' + e);
                 }
-            },
-            getImage: function (name) {
-                return img + name;
             },
             getHistory: function(){
                 return  history;

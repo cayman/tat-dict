@@ -2,7 +2,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     $log.log('DictionaryCtrl');
 
     var postId = data.post;
-    $scope.images = tatApp.getImage('');
+    $scope.images = tatApp.getPlugUrl('img/');
     $scope.icon = null;
     $scope.request = {};
     $scope.out = {};
@@ -27,8 +27,6 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
             $scope.request.name = null;
         }
     };
-
-
 
 
 
@@ -74,7 +72,10 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
                 });
         }
-        $scope.history.push($scope.request.name);
+
+        if($scope.history.length === 0 || $scope.history[$scope.history.length - 1]!==$scope.request.name) {
+            $scope.history.push($scope.request.name);
+        }
 
     };
 
@@ -96,7 +97,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
                 if (searchWord === $scope.request.name) {
                     $scope.search();
                 }
-            }, 900);
+            }, 1200);
         }
     });
 
@@ -112,7 +113,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
     $scope.$watch('out.selected', function (name, oldName) {
         if (name && name !== oldName) {
-            $scope.out.term = tatApp.inArray($scope.out.like, { name: name }) || $scope.glossary[name];
+            $scope.out.term = tatApp.inArray($scope.out.like, name ) || $scope.glossary[name];
 
 //            if($scope.out.term) {
 //                if (!$scope.out.term._description && $scope.out.term.description ) {
