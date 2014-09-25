@@ -8,7 +8,7 @@
         <div class="modal-body" stop-event="touchend">
 
             <div>
-                <img ng-if="icon" ng-src="{{ images }}previous.png" ng-click="restore()"/>
+                <img ng-src="{{ images }}previous.png" ng-click="restore()"/>
                 <input type="text" name="word" ng-model="request.name"
                        class="tat-search-input" ng-mousedown="copyText()"
                        ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
