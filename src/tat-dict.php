@@ -25,7 +25,8 @@ function load_tat_javascript() {
     wp_enqueue_style('dictionary', TATDICT_URL . 'css/dictionary.css', array('style','bootstrap'),'{{version}}');
 
     /*Loading angular*/
-    wp_enqueue_script('angular', TATDICT_URL . 'lib/angular/angular.js', array(),'1.3.0');
+    wp_enqueue_script('js-yaml', TATDICT_URL . 'lib/js-yaml/dist/js-yaml.js', array(),'3.2.2');
+    wp_enqueue_script('angular', TATDICT_URL . 'lib/angular/angular.js', array('js-yaml'),'1.3.0');
     wp_enqueue_script('angular-resource', TATDICT_URL . 'lib/angular-resource/angular-resource.js', array( 'angular' ),'1.3.0');
     wp_enqueue_script('angular-cookies', TATDICT_URL . 'lib/angular-cookies/angular-cookies.js', array( 'angular' ),'1.3.0');
     wp_enqueue_script('angular-sanitize', TATDICT_URL . 'lib/angular-sanitize/angular-sanitize.js', array( 'angular' ),'1.3.0');

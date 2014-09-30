@@ -71,6 +71,7 @@ _tatApp.provider('tatApp', function () {
                 };
                 $modal.open(modalConfig);
             },
+
             getId: function (text) {
                 var hash = 0;
                 try {
@@ -85,9 +86,11 @@ _tatApp.provider('tatApp', function () {
                     throw new Error('hashCode: ' + e);
                 }
             },
+
             getHistory: function(){
                 return  history;
             },
+
             size: function (map){
                 var i = 0;
                 if(map){
@@ -98,6 +101,33 @@ _tatApp.provider('tatApp', function () {
                     }
                 }
                 return i;
+            },
+
+            forEach: function (list,callback, compare) {
+                var comparable = null;
+                var num = 1;
+                if(compare){
+                    if(angular.isFunction(compare)) {
+                        comparable = compare;
+                    }else{
+                        comparable = function(name,value){
+                            return name.substr(0,compare.length)=== compare;
+                        }
+                    }
+                }
+                if(angular.isArray(list)){
+                    for (var key in list) {
+                        if ((!comparable || comparable(key, list[name]))) {
+                            callback(key, list[key], num++);
+                        }
+                    }
+                }else {
+                    for (var key in list) {
+                        if (list.hasOwnProperty(key) && (!comparable || comparable(key, list[key]))) {
+                            callback(key, list[key], num++);
+                        }
+                    }
+                }
             }
 
         };

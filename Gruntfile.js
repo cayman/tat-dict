@@ -121,18 +121,16 @@ module.exports = function (grunt) {
                 src: [ '**/*.json', '*/*.php', '*/*.png', '*/*.gif'],
                 dest: '<%=pkg.build %>'
             },
+            angular: {
+                expand: true,
+                cwd: 'bower_components',
+                src: [ 'angular*/**/*.js', 'angular*/**/*.map', 'angular*/**/*.css'],
+                dest: '<%=pkg.build %>/lib'
+            },
             lib: {
                 expand: true,
                 cwd: 'bower_components',
-                src: [ '**/*.js', '**/*.map', '**/*.css', '!Gruntfile.js',
-                    '!jquery/**', '!bootstrap/**',
-                    '!src/**', '!test/**', '!grunt/**', '!sample/**'],
-                dest: '<%=pkg.build %>/lib'
-            },
-            bootstrap: {
-                expand: true,
-                cwd: 'bower_components',
-                src: [ 'bootstrap/dist/**'],
+                src: [ '*/dist/**'],
                 dest: '<%=pkg.build %>/lib'
             }
         },
@@ -148,7 +146,7 @@ module.exports = function (grunt) {
         },
 
         'ftp-deploy': {
-            build: {
+            code: {
                 auth: {
                     host: '<%=pass.host %>',
                     port: 21,
@@ -158,15 +156,14 @@ module.exports = function (grunt) {
                 dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
                 exclusions: ['temp', 'lib',  '**/*.map', '**/*.js', '!**/<%=pkg.js %>']
             },
-            full: {
+            lib: {
                 auth: {
                     host: '<%=pass.host %>',
                     port: 21,
                     authKey: 'key1'
                 },
-                src: 'build',
-                dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict',
-                exclusions: ['temp', '**/*.map', '**/*.js', '!**/<%=pkg.js %>']
+                src: 'build/lib',
+                dest: '/domains/<%=pass.host %>/public_html/wp-content/plugins/tat-dict/lib'
             }
         }
 
@@ -183,21 +180,20 @@ module.exports = function (grunt) {
         'concat:js',
         'ngAnnotate:js',
         'uglify:js',
-        'copy',
-        'ftp-deploy:build'
+        'copy'
     ]);
 
-    grunt.registerTask('start', [
-        'jshint:all',
-        'clean:all',
-        'sass',
-        'replace',
-        'concat:js',
-        'ngAnnotate:js',
-        'uglify:js',
-        'copy',
-        'watch:all'
+    grunt.registerTask('deploy', [
+        'build',
+        'ftp-deploy:code'
     ]);
+
+    grunt.registerTask('deploy-full', [
+        'build',
+        'ftp-deploy:code',
+        'ftp-deploy:lib'
+    ]);
+
 
 
 };

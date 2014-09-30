@@ -1,21 +1,29 @@
 
 table.tat-rule-grammar {
   border-collapse: collapse;
-  margin-left: 2em;
-  margin-right: 2em;
+  margin-left: 1em;
+  margin-right: 1em;
   width: 90%;
 
+  caption  {
+    color: $mainColor;
+    font-size: 1.5em;
+  }
   th, td {
     display: table-cell;
     border: 1px dotted $borderColor;
     vertical-align: inherit;
     padding: 0.3em;
-    color: #666;
+  }
+  td.link{
+    color: $mainColor;
+    text-decoration: underline;
   }
 
   th {
+    color: #5a5a5a;
     font-size: 1em;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.0em;
     line-height: 1.5em;
     text-transform: none;
