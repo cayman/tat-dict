@@ -33,8 +33,8 @@ function load_tat_javascript() {
     wp_enqueue_script('angular-touch', TATDICT_URL . 'lib/angular-touch/angular-touch.js', array( 'angular' ),'1.3.0');
     wp_enqueue_script('angular-animate', TATDICT_URL . 'lib/angular-animate/angular-animate.js', array( 'angular' ),'1.3.0');
 
-    wp_enqueue_script('aes', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js', array( 'angular' ),'3.1.2');
-    wp_enqueue_script('mode-ecb', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/mode-ecb.js', array( 'angular' ),'3.1.2');
+//    wp_enqueue_script('aes', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js', array( 'angular' ),'3.1.2');
+//    wp_enqueue_script('mode-ecb', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/mode-ecb.js', array( 'angular' ),'3.1.2');
 
     wp_enqueue_script('angular-bootstrap', TATDICT_URL . 'lib/angular-bootstrap/ui-bootstrap-tpls.js', array( 'angular' ),'0.11.0');
 
@@ -50,6 +50,13 @@ function load_tat_javascript() {
             'nonce'   => base64_encode(wp_create_nonce( 'ajax_post_validation' ))
         )
     );
+//
+//    wp_localize_script('angular-app', 'ql',
+//        "angular.element(document).ready(function() {
+//            angular.bootstrap(document, ['tatApp']);
+//        });"
+//    );
+
 }
 
 

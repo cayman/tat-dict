@@ -6,7 +6,7 @@ _tatApp.directive('tatAbbr', function ($log, tatApp, tatRest) {
         list.$promise.then(function () {
             var title = tatApp.inArray(list,element.text(),true);
             if(title) {
-                $log.debug('abbr title:',title.description);
+//                $log.debug('abbr title:',title.description);
                 element.attr('title', title.description);
             }
         });

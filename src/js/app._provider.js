@@ -112,13 +112,13 @@ _tatApp.provider('tatApp', function () {
                     }else{
                         comparable = function(name,value){
                             return name.substr(0,compare.length)=== compare;
-                        }
+                        };
                     }
                 }
                 if(angular.isArray(list)){
-                    for (var key in list) {
-                        if ((!comparable || comparable(key, list[name]))) {
-                            callback(key, list[key], num++);
+                    for (var item in list) {
+                        if ((!comparable || comparable(item, list[name]))) {
+                            callback(item, item, num++);
                         }
                     }
                 }else {

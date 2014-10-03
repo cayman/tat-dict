@@ -66,16 +66,24 @@ _tatApp.factory('tatGlossary', function ($log, tatRest,tatApp) {
 
             if (term === glossaries[postId][term.name]) {
 
-                var params = {post: postId, name: term.name, id: term.id };
+                if(term.id) {
 
-                tatRest.deleteFromGlossary(params, function success(data) {
+                    var params = {post: postId, name: term.name, id: term.id };
+
+                    tatRest.deleteFromGlossary(params, function success(data) {
+                        delete glossaries[postId][term.name];
+                        $log.info('success deleted', tatApp.size(glossaries[postId]));
+
+                    }, function error(result) {
+                        $log.info('error', result);
+                        //append(postId,result);//store in cache
+                    });
+
+                }else{
+
                     delete glossaries[postId][term.name];
-                    $log.info('success deleted',tatApp.size(glossaries[postId]));
 
-                }, function error(result) {
-                    $log.info('error', result);
-                    //append(postId,result);//store in cache
-                });
+                }
 
             }
         }

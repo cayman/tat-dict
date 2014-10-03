@@ -1,63 +1,28 @@
-_tatApp.directive('tatEdu', function ($filter, $log, $compile, tatApp) {
+_tatApp.directive('tatEdu', function ($filter, $log, $compile, tatApp, tatTag) {
     $log.debug('tat-edu');
 
-    function colspan(fieldValue) {
-        return fieldValue && (( fieldValue.colspan || fieldValue.cols ) > 1)
-            ? ' colspan="' + ( fieldValue.colspan || fieldValue.cols ) +'"' : '';
-    }
+    function getDoc(html) {
+        var raw = html.trim().replace(new RegExp('<br>[\\n]', 'ig'), '\n');
+        try {
+            return jsyaml.load(raw);
 
-    function rowspan(fieldValue) {
-        return fieldValue && (( fieldValue.rowspan || fieldValue.rows ) > 1 )
-            ? ' rowspan="' + ( fieldValue.rowspan || fieldValue.rows) +'"' : '';
-    }
-
-    function cell(tag, fieldValue, fieldClass, ngClick) {
-        var value = fieldValue ? ( fieldValue.text || fieldValue.name || fieldValue ) : null;
-
-        html = '<' + tag;
-        if (fieldClass) html += ' class="' + fieldClass + '"';
-        html += colspan(fieldValue);
-        html += rowspan(fieldValue);
-        html += ngClick ? ' ng-click ="' + ngClick + '"' : "";
-        html += '>';
-        html += value ? value : '-';
-        html += '</' + tag + '>';
-        return html;
-    }
-
-    function th(fieldValue, fieldClass, ngClick) {
-        return cell('th', fieldValue, fieldClass, ngClick);
-    }
-
-    function td(fieldValue, fieldClass, ngClick) {
-        return cell('td', fieldValue, fieldClass, ngClick);
+        } catch (except) {
+            $log.debug(except);
+            return null;
+        }
     }
 
     return {
         restrict: 'E',
         link: function (scope, element, attr) {
 
-            function getDoc() {
-                var raw = element.html().trim()
-                    .replace(new RegExp('<br>[\\n]', 'ig'), '\n');
-                try {
-                    return jsyaml.load(raw);
-
-                } catch (except) {
-                    $log.debug(except);
-                    return null;
-                }
-            }
-
-            var doc = getDoc();
+            var doc = getDoc(element.html());
             var html = '';
 
             if (doc) {
 
-                var cols = attr.cols ? attr.cols.split(",") : ['name', 'value'];
+                var cols = [];// = attr.cols ? attr.cols.split(',') : ['name', 'value'];
                 var detail = attr.detail ? attr.detail : 'detail';
-
-                $log.debug(cols);
 
                 html += '<table class="tat-rule-grammar">';
 
@@ -71,19 +36,38 @@ _tatApp.directive('tatEdu', function ($filter, $log, $compile, tatApp) {
 
                     tatApp.forEach(headData, function (rowName, rowValue, rowPosition) {
                         html += '<tr>';
-                        tatApp.forEach(rowValue, function (fieldName, fieldValue, fieldPosition) {
-                            html += th(fieldValue);
-                        });
+                        if (angular.isObject(rowValue)) {
+
+                            tatApp.forEach(rowValue, function (fieldName, fieldValue, fieldPosition) {
+                                if(rowPosition ===1){
+                                    $log.debug('field',fieldName,fieldValue);
+                                    cols = cols.concat(fieldName.split(','));
+                                }
+                                html += !angular.isObject(fieldValue) ?
+                                    tatTag.th(fieldValue) :
+                                    tatTag.th(fieldValue.text || fieldValue.name,
+                                        {colspan: fieldValue.cols, rowspan: fieldValue.rows});
+
+                            });
+
+                        } else {
+
+                            html += tatTag.th(rowValue, {colspan: cols.length});
+                        }
                         html += '</tr>';
                     });
+
 
                     html += '</thead>';
 
                 }, 'head');
 
+                $log.debug('fields',cols);
+
+                html += '<tbody>';
+
                 tatApp.forEach(doc, function (blockName, blockData) {
 
-                    html += '<tbody>';
 
                     tatApp.forEach(blockData, function (rowName, rowValue, rowPosition) {
                         var link = null;
@@ -92,30 +76,37 @@ _tatApp.directive('tatEdu', function ($filter, $log, $compile, tatApp) {
                             //several cells in row
                             cols.forEach(function (col) {
                                 var cell = rowValue[col];
+                                var isString = !angular.isObject(cell);
+
                                 if (!link && rowValue[detail]) {
                                     link = blockName + '_' + rowName;
                                     scope[link] = false;
                                     $log.debug(link);
-                                    html += td(cell, 'link', link + ' = !' + link);
+                                    html += isString ?
+                                        tatTag.td(cell, { class: 'link', ngClick: link + ' = !' + link }) :
+                                        tatTag.td(cell.text || cell.name,
+                                            { class: 'link', ngClick: link + ' = !' + link,
+                                                colspan: cell.cols, cell: cell.rows });
+
                                 } else {
-                                    html += td(cell);
+                                    html += isString ?
+                                        tatTag.td(cell) :
+                                        tatTag.td(cell.text || cell.name, {colspan: cell.cols, cell: cell.rows});
                                 }
+
+
                             });
 
                             if (rowValue[detail]) {
                                 html += '</tr>';
                                 html += '<tr ng-show="' + link + '">';
-                                html += '<td colspan="' + cols.length + '">' + rowValue[detail] + '</td>';
+                                html += tatTag.td(rowValue[detail], { colspan: cols.length });
                             }
 
                         } else {
                             //one sell in row
-                            if (rowPosition === 1) {
-                                html += '<th colspan="' + cols.length + '">' + rowValue + '</th>';
-                            }
-                            else {
-                                html += '<td colspan="' + cols.length + '">' + rowValue + '</td>';
-                            }
+                            html += tatTag.tag(rowPosition === 1 ? 'th' : 'td', rowValue,
+                                {colspan: cols.length, class: rowPosition === 1 ? 'sub-title' : null });
 
                         }
 
@@ -123,9 +114,10 @@ _tatApp.directive('tatEdu', function ($filter, $log, $compile, tatApp) {
 
                     });
 
-                    html += '</tbody>';
 
                 }, 'body');
+
+                html += '</tbody>';
 
                 html += '</table>';
 

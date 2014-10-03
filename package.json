@@ -1,6 +1,6 @@
 {
     "name": "tat-dict",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "description": "Tatar-russion dictionary",
     "main": "tat-dict.php",
     "app": "js/app",
