@@ -54,7 +54,7 @@ class TatDict
             FROM $this->post dp
             INNER JOIN $this->dict dic ON dic.id = dp.dict_id
             LEFT JOIN $this->dict dic0 ON dic0.id = dic.parent
-            WHERE dp.post_id = %d ", $postId));
+            WHERE dp.post_id = %d and user_id = %d", $postId, $userId));
     }
 
     public function findLike($name)

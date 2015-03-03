@@ -25,12 +25,12 @@ gulp.task('script', ['lint', 'clean'], function () {
         ' */',
         ''].join('\n');
 
-    return gulp.src('js/*.js', { cwd: pkg.src })
+    return gulp.src(['js/app._*.js','js/*.js'], { cwd: pkg.src })
         .pipe(g.concat(pkg.app + '.js'))
         .pipe(g.ngAnnotate())
         .pipe(g.header(banner, { pkg: pkg}))
-        .pipe(gulp.dest(pkg.build))
-        .pipe(g.uglifyjs(pkg.app + '.min.js', { outSourceMap: true }))
+       // .pipe(gulp.dest(pkg.build))
+        .pipe(g.uglifyjs(pkg.app + '.min.js', { outSourceMap: false }))
         .pipe(gulp.dest(pkg.build));
 });
 
@@ -71,10 +71,10 @@ gulp.task('lib', ['clean'], function () {
     var angular;
     var dest = pkg.build + '/lib';
     return gulp.src('**', { cwd: 'bower_components' })
-        .pipe(angular = g.filter([ 'angular*/**/*.js', 'angular*/**/*.map', 'angular*/**/*.css']))
+        .pipe(angular = g.filter([ 'angular*/**/*.js', 'angular*/**/*.map', 'angular*/**/*.css', '*/bower.json']))
         .pipe(gulp.dest(dest))
         .pipe(angular.restore())
-        .pipe(g.filter('*/dist/**'))
+        .pipe(g.filter([ '*/dist/**', '*/bower.json' ]))
         .pipe(gulp.dest(dest));
 });
 

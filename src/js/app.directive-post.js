@@ -1,6 +1,10 @@
 _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compile) {
     $log.debug('directive.tat-post');
 
+    function countWords(str) {
+        return str.split(/\s+/).length;
+    }
+
     return function (scope, elem, attrs) {
         var postId = attrs.tatPost;
         var config = tatApp.getConfig();
@@ -10,7 +14,7 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
         elem.on('mouseup', function () {
             if (config.enabled && config.auto) {
                 var text = tatApp.getSelectedText();
-                if (text && text.length < 100) {
+                if (text && text.length < 100 && countWords(text)<4) {
                     tatApp.openDictionary(postId, text);
                 }
             }
