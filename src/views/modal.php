@@ -11,9 +11,14 @@
                 <img ng-src="{{ images }}previous.png" ng-click="restore()"/>
                 <input type="text" name="word" ng-model="request.name"
                        class="tat-search-input" ng-mousedown="copyText()"
-                       ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
+                       ng-swipe-left="deleteSymbol(1)" ng-swipe-right="restore()"
                        placeholder="Языгыз"/>
                 <img ng-if="icon" ng-src="{{ images }}{{ icon }}" ng-click="search()"/>
+                <img ng-if="notEmpty(1)" ng-src="{{ images }}chop.png" ng-click="deleteSymbol(1)"/>
+                <img ng-if="notEmpty(2)" ng-src="{{ images }}chop.png" ng-click="deleteSymbol(2)"/>
+                <img ng-if="notEmpty(3)" ng-src="{{ images }}chop.png" ng-click="deleteSymbol(3)"/>
+                <img ng-if="notEmpty(4)" ng-src="{{ images }}chop.png" ng-click="deleteSymbol(4)"/>
+
             </div>
 
             <div ng-if="out.like && out.like.length>0">

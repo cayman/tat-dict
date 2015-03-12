@@ -10,9 +10,18 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     $scope.history = tatApp.getHistory();
 
 
-    $scope.deleteSymbol = function () {
+    $scope.notEmpty = function () {
+        if($scope.request.name);
+
+    };
+
+     = function min(){
+        (count> $scope.request.name.length
+    }
+
+    $scope.deleteSymbol = function (count) {
         if ($scope.request.name && $scope.request.name.length > 2) {
-            $scope.request.name = $scope.request.name.slice(0, -1);
+            $scope.request.name = $scope.request.name.slice(0, - Math.min($scope.request.name.length-2));
         }
     };
 
