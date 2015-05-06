@@ -11,19 +11,6 @@ function _rp($param)
     return empty($_GET[$param]) ? null : trim($_GET[$param]);
 }
 
-//function fnEncrypt($value, $secretKey, $iv) {
-//    return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $secretKey, $value, MCRYPT_MODE_CBC, $iv));
-//}
-
-function encodeDescription(&$row,$key){
-    //$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_RAND);
-
-   // if(!empty($row->description))
-  //      $row->description = base64_encode($row->description);
-  //  if(!empty($row->parent_description))
-  //      $row->parent_description= base64_encode( $row->parent_description);
-    //    $int_id = absint( $row->ID );
-}
 
 add_action('wp_ajax_tat_search', 'tat_search_callback');
 add_action('wp_ajax_nopriv_tat_search', 'tat_search_callback');

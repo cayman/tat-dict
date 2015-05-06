@@ -103,26 +103,9 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
     //change selectbox
 
-    function decodeDescription(value) {
-        return value;
-//        atob(CryptoJS.AES.decrypt($scope.out.raw, 'zarur',{
-//              mode: mode,
-//                padding: padding
-//            }
-    }
-
     $scope.$watch('out.selected', function (name, oldName) {
         if (name && name !== oldName) {
             $scope.out.term = tatApp.inArray($scope.out.like, name ) || $scope.glossary[name];
-
-//            if($scope.out.term) {
-//                if (!$scope.out.term._description && $scope.out.term.description ) {
-//                    $scope.out.term._description = decodeDescription($scope.out.term.description);
-//                }
-//                if (!$scope.out.term._parent_description && $scope.out.term._parent_description ) {
-//                    $scope.out.term._parent_description = decodeDescription($scope.out.term._parent_description);
-//                }
-//            }
         }
     });
 

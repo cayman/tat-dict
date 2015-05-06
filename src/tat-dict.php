@@ -25,18 +25,17 @@ function load_tat_javascript() {
     wp_enqueue_style('dictionary', TATDICT_URL . 'css/dictionary.css', array('style','bootstrap'),'{{version}}');
 
     /*Loading angular*/
-    wp_enqueue_script('js-yaml', TATDICT_URL . 'lib/js-yaml/dist/js-yaml.js', array(),'3.2.2');
-    wp_enqueue_script('angular', TATDICT_URL . 'lib/angular/angular.js', array('js-yaml'),'1.3.0');
-    wp_enqueue_script('angular-resource', TATDICT_URL . 'lib/angular-resource/angular-resource.js', array( 'angular' ),'1.3.0');
-    wp_enqueue_script('angular-cookies', TATDICT_URL . 'lib/angular-cookies/angular-cookies.js', array( 'angular' ),'1.3.0');
-    wp_enqueue_script('angular-sanitize', TATDICT_URL . 'lib/angular-sanitize/angular-sanitize.js', array( 'angular' ),'1.3.0');
-    wp_enqueue_script('angular-touch', TATDICT_URL . 'lib/angular-touch/angular-touch.js', array( 'angular' ),'1.3.0');
-    wp_enqueue_script('angular-animate', TATDICT_URL . 'lib/angular-animate/angular-animate.js', array( 'angular' ),'1.3.0');
+    wp_enqueue_script('js-yaml', TATDICT_URL . 'lib/js-yaml/dist/js-yaml.js', array(),'3.2.7');
 
-//    wp_enqueue_script('aes', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js', array( 'angular' ),'3.1.2');
-//    wp_enqueue_script('mode-ecb', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/mode-ecb.js', array( 'angular' ),'3.1.2');
+    $angular_version = '1.3.15';
+    wp_enqueue_script('angular', TATDICT_URL . 'lib/angular/angular.js', array('js-yaml'),$angular_version);
+    wp_enqueue_script('angular-resource', TATDICT_URL . 'lib/angular-resource/angular-resource.js', array( 'angular' ),$angular_version);
+    wp_enqueue_script('angular-cookies', TATDICT_URL . 'lib/angular-cookies/angular-cookies.js', array( 'angular' ),$angular_version);
+    wp_enqueue_script('angular-sanitize', TATDICT_URL . 'lib/angular-sanitize/angular-sanitize.js', array( 'angular' ),$angular_version);
+    wp_enqueue_script('angular-touch', TATDICT_URL . 'lib/angular-touch/angular-touch.js', array( 'angular' ),$angular_version);
+    wp_enqueue_script('angular-animate', TATDICT_URL . 'lib/angular-animate/angular-animate.js', array( 'angular' ),$angular_version);
 
-    wp_enqueue_script('angular-bootstrap', TATDICT_URL . 'lib/angular-bootstrap/ui-bootstrap-tpls.js', array( 'angular' ),'0.11.0');
+    wp_enqueue_script('angular-bootstrap', TATDICT_URL . 'lib/angular-bootstrap/ui-bootstrap-tpls.js', array( 'angular' ),'0.11.2');
 
     /*Loading App*/
     wp_enqueue_script('angular-app', TATDICT_URL . '{{js}}', array( 'angular-bootstrap' ),'{{version}}');

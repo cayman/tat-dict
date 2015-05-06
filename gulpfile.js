@@ -71,7 +71,7 @@ gulp.task('lib', ['clean'], function () {
     var angular;
     var dest = pkg.build + '/lib';
     return gulp.src('**', { cwd: 'bower_components' })
-        .pipe(angular = g.filter([ 'angular*/**/*.js', 'angular*/**/*.map', 'angular*/**/*.css', '*/bower.json']))
+        .pipe(angular = g.filter([ 'angular*/**/angular*.js','angular*/**/*.map', 'angular*/**/*.css', '*/bower.json']))
         .pipe(gulp.dest(dest))
         .pipe(angular.restore())
         .pipe(g.filter([ '*/dist/**', '*/bower.json' ]))
@@ -93,5 +93,5 @@ gulp.task('full', ['lib', 'build'], function () {
     return gulp.src('**/*', { cwd: pkg.build })
         .pipe(g.filter(['css/*', '**/*.php', 'js/*.json', pkg.js, 'lib/**', 'img/**']))
          .pipe(g.ftp(ftp));
-//        .pipe(gulp.dest(pkg.build + '1'));
+        //.pipe(gulp.dest(pkg.build + '1'));
 });

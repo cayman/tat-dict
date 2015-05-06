@@ -32,8 +32,8 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
             var start = '<highlight name="' + name + '">';
             var end = '</highlight>';
             return (name.length > 3) ?
-                post.replace(new RegExp('([\\s«])(' + name + ')', 'ig'), '$1' + start + '$2' + end) :
-                post.replace(new RegExp('([\\s«])(' + name + ')([-,;:!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + end + '$3');
+                post.replace(new RegExp('([-,;:!>\\s«])(' + name + ')', 'ig'), '$1' + start + '$2' + end) :
+                post.replace(new RegExp('([-,;:!>\\s«])(' + name + ')([-,;:!\\?\\.\\s])', 'ig'), '$1' + start + '$2' + end + '$3');
 
         }
 
