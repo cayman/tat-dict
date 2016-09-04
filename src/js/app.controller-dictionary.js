@@ -105,6 +105,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
 
     $scope.$watch('out.selected', function (name, oldName) {
         if (name && name !== oldName) {
+            $scope.out.term = {};
             $scope.out.term = tatApp.inArray($scope.out.like, name ) || $scope.glossary[name];
         }
     });

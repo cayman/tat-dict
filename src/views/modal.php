@@ -35,9 +35,13 @@
                 </div>
             </div>
 
-            <div class="form-group" ng-show="out.term.parent_name">
-                <textarea  class="form-control"
-                          ng-model="out.term.description"<?php echo ($userId !== 1) ? ' readonly' : '' ?>></textarea>
+            <div class="form-group" ng-show="out.term.parent_name" ng-cloak>
+                <?php if ($userId == 1): ?>
+                    <textarea  class="form-control" ng-model="out.term.description"></textarea>
+                <?php else: ?>
+                    <textarea  class="form-control" ng-if="out.term.description" ng-model="out.term.description" readonly/>
+                <?php endif; ?>
+
                 <h5 class="tat-search-linked">мөнәсәбәтле сүз</h5>
                 <div class="tat-search-description"
                      tat-description="out.term.parent_description" ng-swipe-right="close()"></div>
