@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Created by IntelliJ IDEA.
  * User: zakirov
