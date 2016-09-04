@@ -1,4 +1,4 @@
-_tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compile) {
+_tatApp.directive('tatPost', function ($log, tatApp, tatGlossary, $compile) {
     $log.debug('directive.tat-post');
 
     function countWords(str) {
@@ -11,19 +11,19 @@ _tatApp.directive('tatPost', function ($log, $modal, tatApp, tatGlossary, $compi
         var post = elem.html();
         scope.glossary = tatGlossary.get(postId);
 
-        elem.on('mouseup', function () {
+        elem.on('mouseup', function (ev) {
             if (config.enabled && config.auto) {
                 var text = tatApp.getSelectedText();
                 if (text && text.length < 100 && countWords(text)<4) {
-                    tatApp.openDictionary(postId, text);
+                    tatApp.openDictionary(ev, postId, text);
                 }
             }
         });
 
-        scope.open = function (name) {
+        scope.open = function (ev, name) {
             $log.info('open dialog', name);
             if (config.enabled && name) {
-                tatApp.openDictionary(postId, name);
+                tatApp.openDictionary(ev, postId, name);
             }
         };
 

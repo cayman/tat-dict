@@ -2,6 +2,7 @@ var gulp = require('gulp'); //>=3.8.8
 var g = require('gulp-load-plugins')({lazy: false});
 var del = require('del');
 var pkg = require('./package.json');
+var bower = require('./bower.json');
 var mainBowerFiles   = require('main-bower-files');
 var ftp = require( 'vinyl-ftp' );
 var ftpParams = {
@@ -67,9 +68,9 @@ gulp.task('style', ['clean'], function () {
 
 gulp.task('replace', ['clean'], function () {
     return gulp.src(pkg.main, { cwd: pkg.src })
-        .pipe(g.replace(/({{(\w*)}})/g,
+        .pipe(g.replace(/({{([-a-z]*)}})/g,
             function (match, offset, string, source, target) {
-                return pkg[string];
+                return pkg[string] || bower.dependencies[string];
             }
         ))
         .pipe(gulp.dest(pkg.build));

@@ -14,9 +14,9 @@ _tatApp.controller('SidebarCtrl', function ($log, $scope, tatApp, tatGlossary, $
         $anchorScroll();
     };
 
-    $scope.openDictionary = function (text) {
+    $scope.openDictionary = function (ev, text) {
         if ($scope.dictConfig.enabled) {
-            tatApp.openDictionary($scope.postId, text || tatApp.getSelectedText());
+            tatApp.openDictionary(ev, $scope.postId, text || tatApp.getSelectedText());
         }
     };
 

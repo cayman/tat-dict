@@ -1,1 +1,1 @@
-var _tatApp = angular.module('tatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngTouch', 'ui.bootstrap', 'ngAnimate']);
+var _tatApp = angular.module('tatApp', ['ngAnimate', 'ngMessages','ngCookies', 'ngResource', 'ngSanitize', 'ngTouch', 'ui.bootstrap']);

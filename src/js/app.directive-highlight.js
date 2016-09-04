@@ -16,8 +16,8 @@ _tatApp.directive('highlight', function ($log, tatApp) {
                 }
             },true);
 
-            element.on('click', function () {
-                scope.open(attrs.name);
+            element.on('click', function (ev) {
+                scope.open(ev,attrs.name);
             });
 
             element.on('mouseover', function () {

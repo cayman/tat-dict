@@ -1,9 +1,9 @@
-_tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossary, tatRest, tatApp, $modalInstance, data) {
+_tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossary, tatRest, tatApp, $uibModalInstance, data) {
     $log.log('DictionaryCtrl');
 
     var postId = data.post;
     $scope.images = tatApp.getPlugUrl('img/');
-    $scope.icon = null;
+    $scope.icon = 'fa-search';
     $scope.request = {};
     $scope.out = {};
     $scope.glossary = tatGlossary.get(postId);
@@ -46,29 +46,29 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         if ($scope.glossary && ($scope.out.term = $scope.glossary[$scope.request.name])) {
             //found in glossary
             $log.debug('selected:', $scope.out.term.name);
-            $scope.icon = 'in-glossary.png';
+            $scope.icon = 'fa-search';
             $scope.out.selected = $scope.out.term.name;
 
         } else {
             //search in dictionary
             $log.debug('new search:', $scope.request);
-            $scope.icon = 'load.gif';
+            $scope.icon = 'fa-refresh fa-spin';
             $scope.out = tatRest.search($scope.request,
                 function objectsFound(value) {
                     if (value.term) {
                         $log.debug('found term:', $scope.out);
-                        $scope.icon = 'found.png';
+                        $scope.icon = 'fa-search-plus';
                         if (value.term.like) {
                             $scope.out.selected = value.term.name;
                         }
                     } else {
                         $log.debug('found like:', $scope.out);
-                        $scope.icon = 'like.png';
+                        $scope.icon = 'fa-search';
                     }
 
                 }, function objectsNotFound(result) {
                     $log.debug('not found:', result);
-                    $scope.icon = 'not-found.png';
+                    $scope.icon = 'fa-search-minus';
 
                 });
         }
@@ -112,17 +112,17 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     //closing
 
     $scope.close = function (result) {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
     };
 
     $scope.save = function () {
         tatGlossary.save(postId, $scope.text, $scope.out.term);
-        $modalInstance.close($scope.text);
+        $uibModalInstance.close($scope.text);
     };
 
     $scope.delete = function () {
         tatGlossary.delete(postId, $scope.out.term);
-        $modalInstance.close($scope.text);
+        $uibModalInstance.close($scope.text);
     };
 
 

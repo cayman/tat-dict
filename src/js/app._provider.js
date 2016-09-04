@@ -24,7 +24,7 @@ _tatApp.provider('tatApp', function () {
     };
 
 
-    this.$get = function ($log, $filter, $modal, $window, $document, $sniffer) {
+    this.$get = function ($log, $filter, $uibModal, $window, $document, $sniffer) {
         var msie = $sniffer.msie;
         var history = [];
         return {
@@ -60,16 +60,17 @@ _tatApp.provider('tatApp', function () {
             inArray: function (arr, key, comparator) {
                 return (arr && arr.length > 0) ? ( $filter('filter')(arr, {name:key}, comparator)[0] || null) : null;
             },
-            openDictionary: function (postId, text) {
+            openDictionary: function (ev, postId, text) {
                 var data = {
                     text: text,
                     post: postId
                 };
+
                 $log.debug('openDictionary', data);
                 modalConfig.resolve.data = function () {
                     return data;
                 };
-                $modal.open(modalConfig);
+                $uibModal.open(modalConfig);
             },
 
             getId: function (text) {
