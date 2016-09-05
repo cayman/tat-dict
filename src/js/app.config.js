@@ -10,6 +10,7 @@ _tatApp.config(function(tatAppProvider){
 
     tatAppProvider.setModalConfig({
         templateUrl: 'tat_dictionary_modal.html',
+        windowClass: 'tat-dialog',
         controller: 'DictionaryCtrl',
         backdrop: 'static',
         keyboard: true,

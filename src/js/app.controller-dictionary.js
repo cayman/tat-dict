@@ -43,6 +43,19 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         $scope.request.name = name;
     };
 
+    //change selectbox
+
+    $scope.selectLike = function (name) {
+        $scope.translation.term = tatApp.inArray($scope.translation.like, name );
+        $scope.selected.glossary = $scope.glossary[name] || null;
+    };
+
+    $scope.selectGlossary = function (name) {
+        $scope.translation.term = $scope.glossary[name];
+        $scope.translation.like = null;
+        $scope.selected.like = null;
+    };
+
 
     $scope.search = function() {
         if ($scope.glossary && $scope.glossary[$scope.request.name]) {
@@ -50,11 +63,8 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
             $log.debug('found in glossary:', $scope.request.name);
 
             //set values from glossary
-            $scope.translation.term = $scope.glossary[$scope.request.name];
-            $scope.selected.glossary = $scope.translation.term.name;
-            //clear like
-            $scope.translation.like = null;
-            $scope.selected.like = null;
+            $scope.selected.glossary = $scope.request.name;
+            $scope.selectGlossary($scope.selected.glossary);
 
             $scope.searchIcon = 'fa-search';
 
@@ -71,16 +81,17 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
                         $log.debug('found term:', translation.term);
                         $scope.searchIcon = 'fa-search-plus';
 
-                        if (translation.like) {
+                        if (translation.like && translation.like.length>0) {
                             $scope.selected.like = translation.term.name;
                             $scope.selected.glossary = null;
                         }
 
-                    } if (translation.like) {
+                    } if (translation.like && translation.like.length>0) {
                         $log.debug('found like:', translation.like);
                         $scope.searchIcon = 'fa-search';
 
                         $scope.selected.like = translation.like[0].name;
+                        $scope.selectLike($scope.selected.like);
                     }
 
                 }, function objectsNotFound(result) {
@@ -141,18 +152,6 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         }
     });
 
-    //change selectbox
-
-    $scope.selectLike = function (name) {
-        $scope.translation.term = tatApp.inArray($scope.translation.like, name );
-        $scope.selected.glossary = $scope.glossary[name] || null;
-    };
-
-    $scope.selectGlossary = function (name) {
-        $scope.translation.term = $scope.glossary[name];
-        $scope.translation.like = null;
-        $scope.selected.like = null;
-    };
 
     //closing
 
