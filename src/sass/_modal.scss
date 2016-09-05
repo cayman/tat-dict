@@ -23,6 +23,20 @@
   max-height: 300px;
 }
 
-.tat-modal-group{
-  margin: 0px -25px 0px -25px;
+.tat-dialog .modal-content {
+  max-height: 100%;
 }
+
+.tat-dialog .modal-header {
+  padding: 10px;
+}
+.tat-dialog .modal-body{
+  padding-top: 5px;
+  padding-bottom: 0;
+
+}
+.tat-dialog .modal-footer {
+  margin-top: 5px;
+  padding: 10px;
+}
+

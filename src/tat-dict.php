@@ -24,7 +24,7 @@ function load_tat_javascript() {
 
     wp_enqueue_style('font-awesome', 'http://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css',array(),'4.6.3');
 
-    wp_enqueue_style('{{name}}-style', TATDICT_URL . 'css/{{name}}.min.css', array('style','bootstrap','font-awesome'),'{{version}}');
+    wp_enqueue_style('{{name}}-style', TATDICT_URL . 'css/{{name}}.min.css', array('style','font-awesome','bootstrap'),'{{version}}');
 
     /*Loading angular*/
     wp_enqueue_script('js-yaml', TATDICT_URL . 'lib/js-yaml.min.js', array(),'{{js-yaml}}');

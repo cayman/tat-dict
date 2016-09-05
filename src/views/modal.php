@@ -8,7 +8,7 @@
                 </button>
             </h4>
         </div>
-        <div class="modal-body form form-horizontal" stop-event="touchend">
+        <div class="modal-body form form-horizontal tat-modal-body" stop-event="touchend">
 
 
             <div class="form-group">
@@ -137,7 +137,7 @@
 
             <div class="form-group" ng-show="translation.term.parent_name" ng-cloak>
                 <?php if ($userId == 1): ?>
-                    <textarea  class="form-control" ng-model="translation.term.description" rows="2" placeholder="Тәрҗемә"></textarea>
+                    <textarea  class="form-control" ng-model="translation.term.description" rows="1" placeholder="Тәрҗемә"></textarea>
                 <?php else: ?>
                     <textarea  class="form-control" ng-show="translation.term.description && translation.term.description.length>0"
                                ng-model="translation.term.description" readonly></textarea>
@@ -146,16 +146,16 @@
 
             <div class="form-group" ng-show="translation.term.parent_name">
                 <h6 class="tat-search-linked">Мөнәсәбәтле сүз</h6>
-                <div class="tat-search-description"
-                     tat-description="translation.term.parent_description" ng-swipe-right="close()"></div>
+                <div class="tat-search-description" tat-description="translation.term.parent_description"
+                     ng-swipe-left="save()" ng-swipe-right="close()"></div>
             </div>
 
             <div class="form-group" ng-hide="translation.term.parent_name">
                 <!-- <pre>{{ translation.term.name | json }}</pre>-->
                 <!-- <pre>{{ translation.term.description | json }}</pre>-->
                 <h6 class="tat-search-linked" ng-show="translation.term.description && translation.term.description.length>0">Тәрҗемә</h6>
-                <div class="tat-search-description"
-                     tat-description="translation.term.description" ng-swipe-right="close()"></div>
+                <div class="tat-search-description" tat-description="translation.term.description"
+                     ng-swipe-left="save()" ng-swipe-right="close()"></div>
             </div>
         </div>
 
