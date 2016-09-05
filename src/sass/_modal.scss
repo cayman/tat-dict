@@ -8,8 +8,9 @@
 
 .tat-search-linked {
   font-weight: 700;
-  overflow: auto;
+  overflow: hidden;
   color: $mainColor;
+  border-bottom: 1px dashed $mainColor; /* Добавляем свою линию */
 }
 
 .tat-search-description {

@@ -23,57 +23,66 @@
                 </div>
             </div>
 
-            <div class="form-group has-feedback" ng-if="out.like && out.like.length>0">
+            <div class="form-group" ng-if="out.like && out.like.length>0">
                 <div class="input-group col-sm-12">
                     <span class="input-group-addon">
                         <i class="tat-icon fa fa-hand-o-right " aria-hidden="true"></i>
                     </span>
-                    <select class="form-control" ng-model="out.selected" data-ng-attr-size="{{ out.like.length > 5 ? 5 : (out.like.length < 2 ? 2 : out.like.length) }}" style="width: 250px">
+                    <select class="form-control" ng-model="out.selected" style="width: 100%"
+
+                            data-ng-attr-size="{{ out.like.length > 5 ? 5 : (out.like.length < 2 ? 2 : out.like.length) }}">
                         <option ng-repeat="term in out.like" value="{{ term.name }}"
-                                ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"/>
+                                ng-selected="{{term.id === out.term.id}}" ng-bind="term.name"></option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group" ng-show="out.term.parent_name" ng-cloak>
                 <?php if ($userId == 1): ?>
-                    <textarea  class="form-control" ng-model="out.term.description"></textarea>
+                    <textarea  class="form-control" ng-model="out.term.description" rows="2" placeholder="Тәрҗемә"></textarea>
                 <?php else: ?>
-                    <textarea  class="form-control" ng-if="out.term.description" ng-model="out.term.description" readonly/>
+                    <textarea  class="form-control" ng-show="out.term.description && out.term.description.length>0"
+                               ng-model="out.term.description" readonly></textarea>
                 <?php endif; ?>
+            </div>
 
-                <h5 class="tat-search-linked">мөнәсәбәтле сүз</h5>
+            <div class="form-group" ng-show="out.term.parent_name">
+                <h6 class="tat-search-linked">Мөнәсәбәтле сүз</h6>
                 <div class="tat-search-description"
                      tat-description="out.term.parent_description" ng-swipe-right="close()"></div>
             </div>
 
-            <div class="form-group has-feedback" ng-hide="out.term.parent_name">
+            <div class="form-group" ng-hide="out.term.parent_name">
+                <h6 class="tat-search-linked" ng-show="out.term.description && out.term.description.length>0">Тәрҗемә</h6>
                 <div class="tat-search-description"
                      tat-description="out.term.description" ng-swipe-right="close()"></div>
             </div>
-
-            <div class="form-group" ng-if="hasGlossary()">
-                <div class="input-group col-sm-12">
-                    <span class="input-group-addon">
-                        <i class="tat-icon fa fa-book" aria-hidden="true"></i>
-                    </span>
-                    <select class="form-control" ng-model="out.selected" style="width: 250px"
-                            placeholder="Истәлек">
-                        <option ng-repeat="(name, term) in glossary" value="{{ name }}"
-                                ng-selected="{{term.id === out.term.id}}" ng-bind="name"/>
-                    </select>
-                </div>
-            </div>
-
         </div>
 <!--        <pre>{{ request | json }}</pre>-->
 <!--        <pre>{{ out.term | json }}</pre>-->
         <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
-            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Ябырга</button>
-            <?php if ($userId > 0): ?>
-                <button type="button" ng-if="text" class="btn btn-default" data-dismiss="modal" ng-click="save()">Сакларга</button>
-                <button type="button" ng-if="inGlossary()" class="btn btn-default" data-dismiss="modal" ng-click="delete()">Ташларга</button>
-            <?php endif; ?>
+
+            <div class="row">
+                <div class="col-md-5 col-sm-5" style="float:left; width:40%">
+                    <div class="input-group" ng-if="hasGlossary()">
+                        <span class="input-group-addon">
+                            <i class="tat-icon fa fa-book" aria-hidden="true"></i>
+                        </span>
+                        <select class="form-control" ng-model="out.selected"
+                                placeholder="Истәлек">
+                            <option ng-repeat="(name, term) in glossary" value="{{ name }}"
+                                    ng-selected="{{term.id === out.term.id}}" ng-bind="name"/>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-7  col-sm7-5">
+                    <?php if ($userId > 0): ?>
+                        <button type="button" ng-if="text" class="btn btn-default" data-dismiss="modal" ng-click="save()">Сакларга</button>
+                        <button type="button" ng-if="inGlossary()" class="btn btn-default" data-dismiss="modal" ng-click="delete()">Ташларга</button>
+                    <?php endif; ?>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">Ябырга</button>
+                </div>
+            </div>
 
         </div>
     </div>
