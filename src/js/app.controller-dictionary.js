@@ -17,15 +17,17 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         if (count<0 && $scope.request.name && $scope.request.name.length > -count) {
             $scope.request.name = $scope.request.name.slice(0, count);
         }else if(count>0) {
-            $scope.request.name +=' ';
+            $scope.request.name += ' ';
         }
 
-        if(symbol)
-            $scope.request.name +=symbol;
+        if(symbol){
+            $scope.request.name += symbol;
+        }
+
     };
 
 
-    $scope.restore = function () {
+    $scope.prev = function () {
         var name = $scope.request.name;
         if($scope.history.length>0){
             $scope.request.name = $scope.history.pop();
@@ -36,7 +38,6 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
             $scope.request.name = null;
         }
     };
-
 
 
     $scope.copyText = function () {
