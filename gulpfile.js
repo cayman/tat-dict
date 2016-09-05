@@ -1,18 +1,12 @@
 var gulp = require('gulp'); //>=3.8.8
 var g = require('gulp-load-plugins')({lazy: false});
 var del = require('del');
-var pkg = require('./package.json');
-var bower = require('./bower.json');
 var mainBowerFiles   = require('main-bower-files');
 var ftp = require( 'vinyl-ftp' );
-var ftpParams = {
-    host: 'ftp.zarur.ru',
-    user: 'u2262s8598',
-    password: 'TWatkx7v',
-    parallel: 3,
-    log:      g.util.log
-};
-var ftpPath = '/domains/zarur.ru/public_html/wp-content/plugins/tat-dict/';
+var pkg = require('./package.json');
+var bower = require('./bower.json');
+var ftpParams = require('./.ftp.json');
+
 
 gulp.task('clean', function (done) {
     return del([pkg.build + '/**/*', '!' + pkg.build + '/lib/**'], { force: false }, done);
@@ -116,23 +110,31 @@ gulp.task('lib', ['clean'], function () {
 gulp.task('build', ['copy', 'script', 'style', 'json', 'replace'], function () {
 });
 
+var ftpConnect = {
+    host: ftpParams.host,
+    user: ftpParams.user,
+    password: ftpParams.password,
+    parallel: 3,
+    log:      g.util.log
+};
+
 gulp.task('default', ['build'], function () {
-    var conn = ftp.create(ftpParams);
+    var conn = ftp.create(ftpConnect);
 
     return gulp.src('**/*', { cwd: pkg.build, buffer: false })
         .pipe(g.filter(['css/*', '**/*.php', 'js/*']))
-        .pipe( conn.newer( ftpPath ) ) // only upload newer files
-        .pipe( conn.dest( ftpPath ) );
+        .pipe( conn.newer( ftpParams.path ) ) // only upload newer files
+        .pipe( conn.dest( ftpParams.path ) );
 
 });
 
 gulp.task('deploy', ['lib','build'], function () {
 
-    var conn = ftp.create(ftpParams);
+    var conn = ftp.create(ftpConnect);
 
     return gulp.src('**/*', { cwd: pkg.build, buffer: false })
         .pipe(g.filter(['lib/*', 'img/*', 'css/*', '**/*.php', 'js/*']))
-        .pipe( conn.newer( ftpPath ) ) // only upload newer files
-        .pipe( conn.dest( ftpPath ) );
+        .pipe( conn.newer( ftpParams.path ) ) // only upload newer files
+        .pipe( conn.dest( ftpParams.path ) );
 
 });

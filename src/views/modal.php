@@ -24,7 +24,7 @@
             </div>
 
             <div class="form-group has-feedback" ng-if="out.like && out.like.length>0">
-                <div class="input-group col-sm-8">
+                <div class="input-group col-sm-12">
                     <span class="input-group-addon">
                         <i class="tat-icon fa fa-hand-o-right " aria-hidden="true"></i>
                     </span>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="form-group" ng-if="hasGlossary()">
-                <div class="input-group col-sm-8">
+                <div class="input-group col-sm-12">
                     <span class="input-group-addon">
                         <i class="tat-icon fa fa-book" aria-hidden="true"></i>
                     </span>
