@@ -10,7 +10,8 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     $scope.glossary = tatGlossary.get(postId);
     $scope.history = tatApp.getHistory();
 
-    $scope.searchIcon = 'fa-search';
+    $scope.status = 4;
+
 
     $scope.deleteSymbol = function () {
         if ($scope.request.name && $scope.request.name.length > 2) {
@@ -39,6 +40,12 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         }
     };
 
+    $scope.copyLike = function () {
+        if($scope.selected.like) {
+            $scope.request.name = $scope.selected.like;
+        }
+    };
+
     $scope.goto = function (name) {
         $scope.request.name = name;
     };
@@ -46,7 +53,7 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     //change selectbox
 
     $scope.selectLike = function (name) {
-        $scope.translation.term = tatApp.inArray($scope.translation.like, name );
+        $scope.translation.term = $scope.translation.like ? $scope.translation.like.find(function(term) { return term.name === name }) : null;
         $scope.selected.glossary = $scope.glossary[name] || null;
     };
 
@@ -61,42 +68,44 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
         if ($scope.glossary && $scope.glossary[$scope.request.name]) {
             //found in glossary
             $log.debug('found in glossary:', $scope.request.name);
-
+            $scope.status = 1;
             //set values from glossary
             $scope.selected.glossary = $scope.request.name;
             $scope.selectGlossary($scope.selected.glossary);
 
-            $scope.searchIcon = 'fa-search';
-
-            
         } else {
             //search in dictionary
             $log.debug('new search:', $scope.request);
-            $scope.searchIcon = 'fa-refresh fa-spin';
 
             $scope.translation = tatRest.search($scope.request,
                 function objectsFound(translation) {
 
                     if (translation.term) {
                         $log.debug('found term:', translation.term);
-                        $scope.searchIcon = 'fa-search-plus';
-
-                        if (translation.like && translation.like.length>0) {
+                        if (translation.like && translation.like.length>1) {
+                            $scope.status = 5;
                             $scope.selected.like = translation.term.name;
                             $scope.selected.glossary = null;
+                        }else{
+                            $scope.status = 4;
+                            //clear term copy from like
+                            translation.like = null;
+                            $scope.selected.like = null;
                         }
 
-                    } if (translation.like && translation.like.length>0) {
+                    } else if (translation.like && translation.like.length>0) {
+                        $scope.status = 3;
                         $log.debug('found like:', translation.like);
-                        $scope.searchIcon = 'fa-search';
 
                         $scope.selected.like = translation.like[0].name;
                         $scope.selectLike($scope.selected.like);
+                    } else {
+                        $scope.status = 2;
                     }
 
                 }, function objectsNotFound(result) {
+                    $scope.status = 0;
                     $log.debug('not found:', result);
-                    $scope.searchIcon = 'fa-search-minus';
 
                 });
         }

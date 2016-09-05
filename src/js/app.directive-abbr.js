@@ -4,7 +4,8 @@ _tatApp.directive('tatAbbr', function ($log, tatApp, tatRest) {
 
         var list = tatRest.getAbbreviations();
         list.$promise.then(function () {
-            var title = tatApp.inArray(list,element.text(),true);
+            var text = element.text();
+            var title = list ? list.find(function(abbr){ return abbr.name==text }) : null;
             if(title) {
 //                $log.debug('abbr title:',title.description);
                 element.attr('title', title.description);

@@ -2,10 +2,11 @@
 <script type="text/ng-template" id="tat_dictionary_modal.html">
     <div class="modal-content">
         <div class="modal-header" ng-swipe-left="close()" ng-swipe-right="close()">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">
-                <i class="fa fa-times" aria-hidden="true"></i>
-            </button>
-            <h4 class="modal-title">Cүзлек<span ng-if="text"> - {{ text }}</span></h4>
+            <h4 class="modal-title">Cүзлек<span ng-if="text"> - {{ text }}</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </h4>
         </div>
         <div class="modal-body form form-horizontal" stop-event="touchend">
 
@@ -21,8 +22,16 @@
                            class="form-control tat-search-input" ng-mousedown="copyText()"
                            ng-swipe-left="deleteSymbol()" ng-swipe-right="restore()"
                            placeholder="Языгыз"/>
-                    <span class="input-group-addon btn" ng-click="search()">
-                       <i class="tat-icon fa {{ searchIcon }}" aria-hidden="true" ng-click="search()"></i>
+                    <span ng-hide="translation.$resolved === false" class="input-group-addon btn" ng-click="search()">
+                       <i ng-show="status===0" class="tat-icon fa fa-times-circle-o" aria-hidden="true"></i>
+                       <i ng-show="status===1" class="tat-icon fa fa-bookmark-o"" aria-hidden="true"></i>
+                       <i ng-show="status===2" class="tat-icon fa fa-question-circle-o" aria-hidden="true"></i>
+                       <i ng-show="status===3" class="tat-icon fa fa-search-minus" aria-hidden="true"></i>
+                       <i ng-show="status===4" class="tat-icon fa fa-search" aria-hidden="true"></i>
+                       <i ng-show="status===5" class="tat-icon fa fa-search-plus" aria-hidden="true"></i>
+                    </span>
+                    <span ng-show="translation.$resolved === false" class="input-group-addon btn" ng-click="search()">
+                       <i class="tat-icon fa fa-refresh fa-spin" aria-hidden="true"></i>
                     </span>
                 </div>
                 <!-- <pre>{{  request | json }}</pre>-->
@@ -31,7 +40,7 @@
 
             <div class="form-group" ng-if="translation.like && translation.like.length>0">
                 <div class="input-group col-sm-12">
-                    <span class="input-group-addon">
+                    <span class="input-group-addon btn" ng-click="copyLike()">
                         <i class="tat-icon fa fa-hand-o-right " aria-hidden="true"></i>
                     </span>
                     <select class="form-control" ng-model="selected.like" style="width: 100%"
@@ -68,43 +77,39 @@
         </div>
 
 
-        <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
-
-            <div class="row">
-                <div class="col-md-6 col-sm-6" style="float:left; width:50%">
-                    <div class="input-group" ng-show="hasGlossary()">
-                        <span class="input-group-addon btn" ng-click="copyGlossary()">
-                            <i class="fa fa-book" aria-hidden="true"></i>
-                        </span>
-                        <select class="form-control" ng-model="selected.glossary" placeholder="Истәлек"
-                            ng-change="selectGlossary(selected.glossary)"
-                            ng-options="name as name for (name, term) in glossary"></option>
-                        </select>
-                        <?php if ($userId > 0): ?>
-                            <span class="input-group-addon btn" ng-show="inGlossary()" ng-click="deleteGlossary()">
-                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
-                            </span>
-                            <span class="input-group-addon btn" ng-hide="inGlossary()" ng-click="saveGlossary()" >
-                                 <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="col-md-6  col-sm6" style="float:right; width:50%">
+        <div class="modal-footer row" ng-swipe-left="close()" ng-swipe-right="close()">
+            <div class="col-md-6 col-sm-6" style="float:left; width:50%">
+                <div class="input-group" ng-show="hasGlossary()">
+                    <span class="input-group-addon btn" ng-click="copyGlossary()">
+                        <i class="fa fa-book" aria-hidden="true"></i>
+                    </span>
+                    <select class="form-control" ng-model="selected.glossary" placeholder="Истәлек"
+                        ng-change="selectGlossary(selected.glossary)"
+                        ng-options="name as name for (name, term) in glossary"></option>
+                    </select>
                     <?php if ($userId > 0): ?>
-                    <button type="button" ng-if="text" class="btn btn-default" data-dismiss="modal" ng-click="save()">
-                        <i class="fa fa-bookmark" aria-hidden="true"></i>
-                        Сакларга
-                    </button>
+                        <span class="input-group-addon btn" ng-show="inGlossary()" ng-click="deleteGlossary()">
+                             <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </span>
+                        <span class="input-group-addon btn" ng-hide="inGlossary()" ng-click="saveGlossary()" >
+                             <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                        </span>
                     <?php endif; ?>
-
-                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">
-                        <i class="fa fa-times" aria-hidden="true"></i>
-                        Ябырга
-                    </button>
                 </div>
             </div>
+            <div class="col-md-6  col-sm6" style="float:right; width:50%">
+                <?php if ($userId > 0): ?>
+                <button type="button" ng-if="text" class="btn btn-default" data-dismiss="modal" ng-click="save()">
+                    <i class="fa fa-bookmark" aria-hidden="true"></i>
+                    Сакларга
+                </button>
+                <?php endif; ?>
 
-        </div>
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                    Ябырга
+                </button>
+            </div>
+         </div>
     </div>
 </script>
