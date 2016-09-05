@@ -5,6 +5,9 @@
 .tat-icon {
   color: $mainColor;
 }
+.tat-add {
+  color: $alertColor;
+}
 
 .tat-search-linked {
   font-weight: 700;
@@ -20,7 +23,6 @@
   max-height: 300px;
 }
 
-.tat-dialog .modal-content {
-  //max-height: 600px;
-  //overflow: auto;
+.tat-modal-group{
+  margin: 0px -25px 0px -25px;
 }

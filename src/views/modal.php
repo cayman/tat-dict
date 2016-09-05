@@ -39,64 +39,87 @@
 
                 </div>
 <!--                 <pre>{{  request | json }}</pre>-->
-            </div>
 
-            <div class="form-group row">
 
-                <div class="btn-group col-sm-8">
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-3)">
+            <div class="btn-toolbar">
+
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-3)">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-3,'у')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-3,'у')">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true"></i>у
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-3,'ү')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-3,'ү')">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true"></i>ү
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-2)">
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-2)">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-2,'у')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-2,'у')">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i>у
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-2,'ү')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-2,'ү')">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
                         </i>ү
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(-1)">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-2,'ау')">
+                        <i class="tat-icon fa fa-angle-left" aria-hidden="true">
+                        </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
+                        </i>ау
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-2,'әү')">
+                        <i class="tat-icon fa fa-angle-left" aria-hidden="true">
+                        </i><i class="tat-icon fa fa-angle-left" aria-hidden="true">
+                        </i>әү
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(-1)">
                         <i class="tat-icon fa fa-angle-left" aria-hidden="true"></i>
                     </button>
-
-                </div>
-                <div class="btn-group col-sm-4">
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(0,'у')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'у')">
                         у
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(0,'ү')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'ү')">
                         ү
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(0,'к')">
-                        к
-                    </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(0,'а')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'а')">
                         а
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="addSymbol(0,'ә')">
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'ә')">
                         ә
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'к')">
+                        к
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'л')">
+                        л
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'м')">
+                        м
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'н')">
+                        н
+                    </button>
+                    <button type="button" class="tat-add btn btn-default" ng-click="addSymbol(0,'с')">
+                        с
                     </button>
                 </div>
             </div>
-
+            </div>
 
             <div class="form-group" ng-if="translation.like && translation.like.length>0">
                 <div class="input-group col-sm-12">
@@ -137,9 +160,8 @@
         </div>
 
 
-        <div class="modal-footer row" ng-swipe-left="close()" ng-swipe-right="close()">
-            <div class="col-md-6 col-sm-6" style="float:left; width:50%">
-                <div class="input-group" ng-show="hasGlossary()">
+        <div class="modal-footer" ng-swipe-left="close()" ng-swipe-right="close()">
+                <div class="input-group" ng-show="hasGlossary()" style="float:left; width:42%">
                     <span class="input-group-addon btn" ng-click="copyGlossary()">
                         <i class="fa fa-book" aria-hidden="true"></i>
                     </span>
@@ -156,20 +178,21 @@
                         </span>
                     <?php endif; ?>
                 </div>
-            </div>
-            <div class="col-md-6  col-sm6" style="float:right; width:50%">
+
+            <div class="btn-group">
                 <?php if ($userId > 0): ?>
                 <button type="button" ng-if="text" class="btn btn-default" data-dismiss="modal" ng-click="save()">
-                    <i class="fa fa-bookmark" aria-hidden="true"></i>
+<!--                    <i class="fa fa-bookmark" aria-hidden="true"></i>-->
                     Сакларга
                 </button>
                 <?php endif; ?>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">
-                    <i class="fa fa-times" aria-hidden="true"></i>
+<!--                    <i class="fa fa-times" aria-hidden="true"></i>-->
                     Ябырга
                 </button>
             </div>
+
          </div>
     </div>
 </script>
