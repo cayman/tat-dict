@@ -13,11 +13,17 @@ _tatApp.controller('DictionaryCtrl', function ($log, $scope, $timeout, tatGlossa
     $scope.status = 4;
 
 
-    $scope.deleteSymbol = function () {
-        if ($scope.request.name && $scope.request.name.length > 2) {
-            $scope.request.name = $scope.request.name.slice(0, -1);
+    $scope.addSymbol = function (count,symbol) {
+        if (count<0 && $scope.request.name && $scope.request.name.length > -count) {
+            $scope.request.name = $scope.request.name.slice(0, count);
+        }else if(count>0) {
+            $scope.request.name +=' ';
         }
+
+        if(symbol)
+            $scope.request.name +=symbol;
     };
+
 
     $scope.restore = function () {
         var name = $scope.request.name;
