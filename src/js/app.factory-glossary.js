@@ -19,7 +19,7 @@ _tatApp.factory('tatGlossary', function ($log, tatRest,tatApp) {
             }
         },
 
-        save: function (postId, text, term) {
+        save: function (postId, text, term, callback) {
 
             if (!postId || !text) {
                 return;
@@ -51,6 +51,7 @@ _tatApp.factory('tatGlossary', function ($log, tatRest,tatApp) {
 
             glossaries[postId][text] = tatRest.addToGlossary(params, function success(data) {
                 $log.info('success');
+                callback()
             }, function error(result) {
                 $log.info('error', result);
                 //append(postId,result);//store in cache
